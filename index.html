@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كيمياء الجذور - د. عمر الرواجفة</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    overflow-x: hidden;
+    background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+    min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
+
+@keyframes pulse-glow {
+    0%,100% { box-shadow: 0 0 10px rgba(56,189,248,.5); }
+    50% { box-shadow: 0 0 25px rgba(56,189,248,.9); }
+}
+
+@keyframes synthesis {
+    0% { transform:scale(1); filter:brightness(1); }
+    50% {
+        transform:scale(1.1);
+        filter:brightness(1.5);
+        text-shadow:0 0 10px #38bdf8;
+    }
+    100% { transform:scale(1); filter:brightness(1); }
+}
+
+@keyframes shake {
+    0%,100% { transform:translateX(0); }
+    25% { transform:translateX(-5px); }
+    50% { transform:translateX(5px); }
+    75% { transform:translateX(-5px); }
+}
+
+@keyframes float {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-10px); }
+}
+
+@keyframes pop {
+    0% { transform:scale(.7); opacity:0; }
+    100% { transform:scale(1); opacity:1; }
+}
+
+@keyframes star {
+    0% { transform:scale(.3) rotate(-20deg); opacity:0; }
+    70% { transform:scale(1.2) rotate(5deg); opacity:1; }
+    100% { transform:scale(1); }
+}
+
+@keyframes slide-in-right {
+    from { transform: translateX(50px); opacity:0; }
+    to { transform: translateX(0); opacity:1; }
+}
+
+@keyframes slide-in-left {
+    from { transform: translateX(-50px); opacity:0; }
+    to { transform: translateX(0); opacity:1; }
+}
+
+.synthesizing { animation:synthesis .6s ease-out; }
+.error-shake {
+    animation:shake .4s ease-in-out;
+    border-color:#ef4444 !important;
+    color:#ef4444 !important;
+}
+.selected-word {
+    animation:pulse-glow 1.5s infinite;
+    border-color:#38bdf8 !important;
+}
+.floating-icon { animation:float 3s ease-in-out infinite; }
+.pop { animation:pop .35s ease-out; }
+.star-animation { animation:star .6s ease-out; }
+
+.glass-panel {
+    background:rgba(30,41,59,.7);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(56,189,248,.2);
+}
+
+.sentence-blank {
+    display:inline-block;
+    min-width:90px;
+    height:34px;
+    border-bottom:2px dashed #94a3b8;
+    margin:0 8px;
+    text-align:center;
+    cursor:pointer;
+    transition:all .3s;
+    color:#fcd34d;
+    font-weight:bold;
+}
+
+.sentence-blank:hover {
+    border-color:#38bdf8;
+    background:rgba(56,189,248,.1);
+}
+
+.sentence-blank.filled {
+    border-bottom:2px solid #22c55e;
+    color:#22c55e;
+    cursor:default;
+}
+
+.pattern-btn,.word-btn,.choice-btn,.lab-btn {
+    transition:all .3s cubic-bezier(.4,0,.2,1);
+}
+
+.pattern-btn:hover:not(:disabled),
+.choice-btn:hover:not(:disabled),
+.lab-btn:hover:not(:disabled) {
+    transform:translateY(-3px);
+    box-shadow:0 10px 15px -3px rgba(56,189,248,.3);
+}
+
+.pattern-btn:active:not(:disabled),
+.choice-btn:active:not(:disabled),
+.lab-btn:active:not(:disabled) {
+    transform:translateY(1px);
+}
+
+.disabled-card {
+    opacity:.45;
+    filter:grayscale(.5);
+}
+
+.xp-bar {
+    transition:width .6s ease;
+}
+
+.modal-bg {
+    background:rgba(2,6,23,.86);
+    backdrop-filter:blur(8px);
+}
+
+.toast {
+    animation:pop .35s ease-out;
+}
+
+.answer-correct {
+    border-color:#22c55e !important;
+    background:rgba(22,101,52,.25) !important;
+}
+
+.answer-wrong {
+    border-color:#ef4444 !important;
+    background:rgba(127,29,29,.25) !important;
+}
+
+/* أنماط جديدة للمختبرات الإضافية */
+.rule-card {
+    transition: all .3s ease;
+}
+.rule-card:hover {
+    background: rgba(56,189,248,.1);
+    transform: translateY(-2px);
+}
+.step-arrow {
+    animation: float 2s ease-in-out infinite;
+}
+.microscope-icon {
+    cursor: pointer;
+    transition: transform .3s;
+}
+.microscope-icon:hover {
+    transform: scale(1.2);
+}
+</style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+<!-- HEADER -->
+<header class="glass-panel sticky top-0 z-50 px-4 md:px-6 py-4 flex justify-between items-center shadow-lg border-b border-cyan-900">
+
+    <div class="flex items-center gap-3">
+        <i class="fas fa-flask text-3xl text-cyan-400 floating-icon"></i>
+        <div>
+            <h1 class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-l from-cyan-400 to-blue-500">
+                كيمياء الجذور
+            </h1>
+            <p class="text-xs text-slate-400">مختبر الصرف والاشتقاق العربي</p>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-3 md:gap-6">
+
+        <div class="hidden sm:block text-center">
+            <p class="text-xs text-slate-400">المستوى</p>
+            <p class="text-lg font-bold text-cyan-400" id="player-level">1</p>
+        </div>
+
+        <div class="hidden sm:block w-28">
+            <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-400">XP</span>
+                <span id="xp-text">0 / 100</span>
+            </div>
+            <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div id="xp-bar" class="xp-bar h-full bg-gradient-to-r from-cyan-500 to-blue-500" style="width:0%"></div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <p class="text-xs text-slate-400">النقاط</p>
+            <p class="text-xl font-bold text-yellow-400" id="score-display">0</p>
+        </div>
+
+        <button onclick="app.showStats()"
+                class="w-10 h-10 rounded-full bg-slate-800 hover:bg-cyan-900 border border-slate-700 transition"
+                title="الإحصائيات">
+            <i class="fas fa-chart-line text-cyan-400"></i>
+        </button>
+
+    </div>
+</header>
+
+<!-- MAIN -->
+<main id="main" class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
+
+    <!-- HOME -->
+    <section id="home-screen">
+
+        <div class="text-center mb-10">
+            <i class="fas fa-atom text-7xl text-cyan-500 opacity-50 floating-icon"></i>
+
+            <h2 class="text-4xl md:text-5xl font-black mt-5 mb-3
+                       text-transparent bg-clip-text bg-gradient-to-l from-cyan-300 to-blue-500">
+                مرحبًا بك في مختبر كيمياء الجذور
+            </h2>
+
+            <p class="text-slate-400 max-w-2xl mx-auto leading-loose">
+                لا تحفظ الصرف فقط... اكتشفه.
+                حلّل الجذر، فعّل الوزن، راقب التحول، ثم اختبر الكلمة في سياقها.
+            </p>
+        </div>
+
+        <!-- QUICK STATS -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+
+            <div class="glass-panel rounded-2xl p-5 text-center">
+                <i class="fas fa-fire text-3xl text-orange-400 mb-2"></i>
+                <p class="text-xs text-slate-400">أفضل سلسلة</p>
+                <p id="home-combo" class="text-2xl font-black">0</p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-5 text-center">
+                <i class="fas fa-flask text-3xl text-cyan-400 mb-2"></i>
+                <p class="text-xs text-slate-400">تفاعلات</p>
+                <p id="home-synth" class="text-2xl font-black">0</p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-5 text-center">
+                <i class="fas fa-book text-3xl text-purple-400 mb-2"></i>
+                <p class="text-xs text-slate-400">كلمات مكتشفة</p>
+                <p id="home-words" class="text-2xl font-black">0</p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-5 text-center">
+                <i class="fas fa-medal text-3xl text-yellow-400 mb-2"></i>
+                <p class="text-xs text-slate-400">الإنجازات</p>
+                <p id="home-achievements" class="text-2xl font-black">0</p>
+            </div>
+
+        </div>
+
+        <h3 class="text-2xl font-bold mb-5">
+            <i class="fas fa-vials text-cyan-400 ml-2"></i>
+            اختر المختبر
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-cyan-500/30"
+                    onclick="app.startLab('synthesis')">
+                <i class="fas fa-flask text-4xl text-cyan-400 mb-4"></i>
+                <h3 class="text-xl font-black">مختبر التركيب</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    ركّب الجذر مع الوزن واكتشف الكلمة ثم وظّفها في السياق.
+                </p>
+                <div class="mt-4 text-xs text-cyan-400">الجذر ← الوزن ← الكلمة</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-purple-500/30"
+                    onclick="app.startLab('analysis')">
+                <i class="fas fa-search text-4xl text-purple-400 mb-4"></i>
+                <h3 class="text-xl font-black">مختبر التحليل</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    ابدأ بالكلمة واكتشف جذرها ووزنها ونوعها الصرفي.
+                </p>
+                <div class="mt-4 text-xs text-purple-400">الكلمة ← التحليل</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-emerald-500/30"
+                    onclick="app.startLab('transform')">
+                <i class="fas fa-dna text-4xl text-emerald-400 mb-4"></i>
+                <h3 class="text-xl font-black">مختبر التحولات</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    اكتشف الإعلال والإبدال والإدغام والحذف والقلب وغيرها.
+                </p>
+                <div class="mt-4 text-xs text-emerald-400">القاعدة ← التحول</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-yellow-500/30"
+                    onclick="app.startLab('derivation')">
+                <i class="fas fa-project-diagram text-4xl text-yellow-400 mb-4"></i>
+                <h3 class="text-xl font-black">مختبر الاشتقاق</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    ابنِ اسم الفاعل واسم المفعول والمصادر وصيغ المبالغة وغيرها.
+                </p>
+                <div class="mt-4 text-xs text-yellow-400">الجذر ← المشتق</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-pink-500/30"
+                    onclick="app.startLab('context')">
+                <i class="fas fa-book-open text-4xl text-pink-400 mb-4"></i>
+                <h3 class="text-xl font-black">مختبر السياق</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    اختر المشتق الأنسب للسياق واختبر فهمك للدلالة والاستعمال.
+                </p>
+                <div class="mt-4 text-xs text-pink-400">الكلمة ← المعنى</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-orange-500/30"
+                    onclick="app.startLab('mixed')">
+                <i class="fas fa-random text-4xl text-orange-400 mb-4"></i>
+                <h3 class="text-xl font-black">المفاعل الشامل</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    تحديات مختلطة تتطلب منك استخدام جميع مهاراتك الصرفية.
+                </p>
+                <div class="mt-4 text-xs text-orange-400">تحدٍّ شامل</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-blue-500/30"
+                    onclick="app.startLab('weakening')">
+                <i class="fas fa-water text-4xl text-blue-400 mb-4"></i>
+                <h3 class="text-xl font-black">مختبر الإعلال</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    ادرس قلب الواو والياء ألفاً وحذفها في الصيغ المختلفة.
+                </p>
+                <div class="mt-4 text-xs text-blue-400">الإعلال بالقلب والحذف</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-teal-500/30"
+                    onclick="app.startLab('substitution')">
+                <i class="fas fa-exchange-alt text-4xl text-teal-400 mb-4"></i>
+                <h3 class="text-xl font-black">مختبر الإبدال</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    اكتشف إبدال الواو والياء همزة وتاء في الاشتقاقات.
+                </p>
+                <div class="mt-4 text-xs text-teal-400">الإبدال الصرفي</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-red-500/30"
+                    onclick="app.startLab('assimilation')">
+                <i class="fas fa-compress-alt text-4xl text-red-400 mb-4"></i>
+                <h3 class="text-xl font-black">مختبر الإدغام</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    شاهد كيف يُدغم المتماثلان والمتقاربان في الكلمة.
+                </p>
+                <div class="mt-4 text-xs text-red-400">الإدغام بنوعيه</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-amber-500/30"
+                    onclick="app.startLab('deletion')">
+                <i class="fas fa-eraser text-4xl text-amber-400 mb-4"></i>
+                <h3 class="text-xl font-black">مختبر الحذف</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    تعرف على مواضع حذف حروف العلة والهمزة في التصاريف.
+                </p>
+                <div class="mt-4 text-xs text-amber-400">الحذف القياسي</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-lime-500/30"
+                    onclick="app.startLab('discover')">
+                <i class="fas fa-lightbulb text-4xl text-lime-400 mb-4"></i>
+                <h3 class="text-xl font-black">اكتشف القاعدة</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    استنتج القاعدة الصرفية من الأمثلة المعروضة.
+                </p>
+                <div class="mt-4 text-xs text-lime-400">الاستدلال اللغوي</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-fuchsia-500/30"
+                    onclick="app.startLab('battle')">
+                <i class="fas fa-fist-raised text-4xl text-fuchsia-400 mb-4"></i>
+                <h3 class="text-xl font-black">المعركة الصرفية</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    تحدّيات سريعة لبناء الكلمات واختيار العمليات الصحيحة.
+                </p>
+                <div class="mt-4 text-xs text-fuchsia-400">تحدي مباشر</div>
+            </button>
+
+            <button class="lab-btn glass-panel rounded-2xl p-6 text-right border-sky-500/30"
+                    onclick="app.startLab('free')">
+                <i class="fas fa-flask text-4xl text-sky-400 mb-4"></i>
+                <h3 class="text-xl font-black">المختبر الحر</h3>
+                <p class="text-sm text-slate-400 mt-2">
+                    أدخل أي جذر واختر وزنًا وشاهد الناتج والتفسير.
+                </p>
+                <div class="mt-4 text-xs text-sky-400">تجربة حرة</div>
+            </button>
+
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+
+            <button onclick="app.showDictionary()"
+                    class="glass-panel rounded-2xl p-5 hover:border-purple-400 transition text-right">
+                <i class="fas fa-book text-2xl text-purple-400 ml-3"></i>
+                <strong>قاموس المكتشفات</strong>
+                <span class="block text-sm text-slate-400 mt-1 mr-10">
+                    راجع الكلمات التي اكتشفتها أثناء اللعب.
+                </span>
+            </button>
+
+            <button onclick="app.showMistakes()"
+                    class="glass-panel rounded-2xl p-5 hover:border-red-400 transition text-right">
+                <i class="fas fa-heartbeat text-2xl text-red-400 ml-3"></i>
+                <strong>مختبر المراجعة</strong>
+                <span class="block text-sm text-slate-400 mt-1 mr-10">
+                    عالج الأخطاء التي وقعت فيها سابقًا.
+                </span>
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="game-screen" class="hidden">
+
+        <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+
+            <button onclick="app.goHome()"
+                    class="bg-slate-800 hover:bg-slate-700 px-5 py-2 rounded-full border border-slate-700">
+                <i class="fas fa-home ml-2"></i>
+                المختبرات
+            </button>
+
+            <div class="text-center flex-grow">
+                <h2 id="game-title" class="text-3xl font-black"></h2>
+                <p id="game-instruction" class="text-slate-400 text-sm mt-1"></p>
+            </div>
+
+            <div class="flex gap-2">
+                <span class="bg-orange-900/30 border border-orange-500/30 px-4 py-2 rounded-full">
+                    <i class="fas fa-fire text-orange-400 ml-1"></i>
+                    <span id="combo-display">0</span>
+                </span>
+
+                <span class="bg-yellow-900/30 border border-yellow-500/30 px-4 py-2 rounded-full">
+                    <i class="fas fa-star text-yellow-400 ml-1"></i>
+                    <span id="stars-display">0</span>
+                </span>
+            </div>
+
+        </div>
+
+        <!-- Progress -->
+        <div class="mb-7">
+            <div class="flex justify-between text-sm mb-2">
+                <span id="question-counter">التحدي 1</span>
+                <span id="accuracy-display">الدقة 100%</span>
+            </div>
+            <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div id="question-progress"
+                     class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500"
+                     style="width:0%"></div>
+            </div>
+        </div>
+
+        <!-- DYNAMIC GAME -->
+        <div id="game-content"></div>
+
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 border-t border-slate-800 py-6 text-center mt-auto">
+    <div class="container mx-auto px-4">
+        <p class="text-slate-400 text-sm mb-2">
+            تم تطوير هذا التطبيق التعليمي التفاعلي لتعزيز مهارات الصرف والاشتقاق وبناء الثروة اللغوية.
+        </p>
+        <div class="inline-block bg-slate-800 rounded-lg px-4 py-2 border border-slate-700">
+            <span class="text-cyan-400 font-bold">
+                <i class="fas fa-copyright ml-1"></i>
+                رخصة اللعبة محفوظة باسم:
+            </span>
+            <span class="text-white font-black text-lg mr-2">د. عمر الرواجفة</span>
+        </div>
+    </div>
+</footer>
+
+<!-- MODAL -->
+<div id="modal" class="fixed inset-0 modal-bg z-[100] hidden items-center justify-center p-4">
+    <div id="modal-content"
+         class="glass-panel rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-7 relative">
+        <button onclick="app.closeModal()"
+                class="absolute left-5 top-5 text-slate-400 hover:text-white text-xl">
+            <i class="fas fa-times"></i>
+        </button>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"
+     class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] hidden">
+    <div class="glass-panel px-6 py-4 rounded-xl shadow-2xl border-cyan-500/40">
+        <span id="toast-text"></span>
+    </div>
+</div>
+
+<script>
+
+/* ============================================================
+   قاعدة البيانات الصرفية الموسعة
+============================================================ */
+
+// تعريف أنواع الحروف
+const LETTER_TYPES = {
+    SAHIH: 'صحيح',
+    WAW: 'واو',
+    YA: 'ياء',
+    HAMZA: 'همزة',
+    SHADDA: 'شدة'
+};
+
+// الأوزان الصرفية الأساسية
+const PATTERNS = {
+    // الأفعال
+    'فَعَلَ':   { template: 'ف ع ل',       tense: 'ماضٍ',   type: 'مجرد',     transitive: true },
+    'يَفْعَلُ': { template: 'ي ف ع ل',     tense: 'مضارع',  type: 'مجرد',     transitive: true },
+    'فَعَّلَ':  { template: 'ف ع ل',       tense: 'ماضٍ',   type: 'مزيد',     transitive: true, extra: 'ضعف العين' },
+    'يُفَعِّلُ':{ template: 'ي ف ع ل',     tense: 'مضارع',  type: 'مزيد',     transitive: true, extra: 'ضعف العين' },
+    'فَاعَلَ':  { template: 'ف ا ع ل',     tense: 'ماضٍ',   type: 'مزيد',     transitive: true, extra: 'ألف بعد الفاء' },
+    'أَفْعَلَ': { template: 'أ ف ع ل',     tense: 'ماضٍ',   type: 'مزيد',     transitive: true, extra: 'همزة قطع' },
+    'افْتَعَلَ':{ template: 'ا ف ت ع ل',   tense: 'ماضٍ',   type: 'مزيد',     transitive: true, extra: 'تاء الافتعال' },
+    'انْفَعَلَ':{template: 'ا ن ف ع ل',    tense: 'ماضٍ',   type: 'مزيد',     transitive: false, extra: 'نون ساكنة' },
+    'اسْتَفْعَلَ':{template: 'ا س ت ف ع ل',tense: 'ماضٍ',   type: 'مزيد',     transitive: true, extra: 'سين وتاء' },
+
+    // الأسماء
+    'فَاعِل':   { template: 'ف ا ع ل',     category: 'اسم فاعل',   type: 'مشتق' },
+    'مَفْعُول': { template: 'م ف ع و ل',   category: 'اسم مفعول',  type: 'مشتق' },
+    'فَعَّال':  { template: 'ف ع ا ل',     category: 'صيغة مبالغة', type: 'مشتق', extra: 'ضعف العين' },
+    'مِفْعَال': { template: 'م ف ع ا ل',   category: 'صيغة مبالغة', type: 'مشتق' },
+    'تَفْعِيل': { template: 'ت ف ع ي ل',   category: 'مصدر',       type: 'مصدر', extra: 'ياء بعد العين' },
+    'فِعْل':    { template: 'ف ع ل',       category: 'مصدر',       type: 'مصدر' },
+    'مَفْعِل':  { template: 'م ف ع ل',     category: 'اسم مكان/زمان', type: 'مشتق' },
+    'مِفْعَل':  { template: 'م ف ع ل',     category: 'اسم آلة',    type: 'مشتق' },
+};
+
+// جذور موسعة مع خصائصها
+const ROOTS = [
+    // صحيحة
+    {
+        root: 'ك ت ب', type: 'صحيح',
+        letters: [
+            { char: 'ك', type: LETTER_TYPES.SAHIH },
+            { char: 'ت', type: LETTER_TYPES.SAHIH },
+            { char: 'ب', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'الكتابة'
+    },
+    {
+        root: 'ع ل م', type: 'صحيح',
+        letters: [
+            { char: 'ع', type: LETTER_TYPES.SAHIH },
+            { char: 'ل', type: LETTER_TYPES.SAHIH },
+            { char: 'م', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'العلم'
+    },
+    {
+        root: 'د ر س', type: 'صحيح',
+        letters: [
+            { char: 'د', type: LETTER_TYPES.SAHIH },
+            { char: 'ر', type: LETTER_TYPES.SAHIH },
+            { char: 'س', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'الدراسة'
+    },
+    {
+        root: 'ق ط ع', type: 'صحيح',
+        letters: [
+            { char: 'ق', type: LETTER_TYPES.SAHIH },
+            { char: 'ط', type: LETTER_TYPES.SAHIH },
+            { char: 'ع', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'القطع'
+    },
+    {
+        root: 'ف ت ح', type: 'صحيح',
+        letters: [
+            { char: 'ف', type: LETTER_TYPES.SAHIH },
+            { char: 'ت', type: LETTER_TYPES.SAHIH },
+            { char: 'ح', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'الفتح'
+    },
+    {
+        root: 'ج ل س', type: 'صحيح',
+        letters: [
+            { char: 'ج', type: LETTER_TYPES.SAHIH },
+            { char: 'ل', type: LETTER_TYPES.SAHIH },
+            { char: 'س', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'الجلوس'
+    },
+    // مثال واوي
+    {
+        root: 'و ع د', type: 'مثال واوي',
+        letters: [
+            { char: 'و', type: LETTER_TYPES.WAW },
+            { char: 'ع', type: LETTER_TYPES.SAHIH },
+            { char: 'د', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'الوعد'
+    },
+    {
+        root: 'و ج د', type: 'مثال واوي',
+        letters: [
+            { char: 'و', type: LETTER_TYPES.WAW },
+            { char: 'ج', type: LETTER_TYPES.SAHIH },
+            { char: 'د', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'الوجود'
+    },
+    // أجوف واوي
+    {
+        root: 'ق و ل', type: 'أجوف واوي',
+        letters: [
+            { char: 'ق', type: LETTER_TYPES.SAHIH },
+            { char: 'و', type: LETTER_TYPES.WAW },
+            { char: 'ل', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'القول'
+    },
+    {
+        root: 'ص و م', type: 'أجوف واوي',
+        letters: [
+            { char: 'ص', type: LETTER_TYPES.SAHIH },
+            { char: 'و', type: LETTER_TYPES.WAW },
+            { char: 'م', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'الصوم'
+    },
+    // أجوف يائي
+    {
+        root: 'ب ي ع', type: 'أجوف يائي',
+        letters: [
+            { char: 'ب', type: LETTER_TYPES.SAHIH },
+            { char: 'ي', type: LETTER_TYPES.YA },
+            { char: 'ع', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'البيع'
+    },
+    // ناقص
+    {
+        root: 'ر م ي', type: 'ناقص يائي',
+        letters: [
+            { char: 'ر', type: LETTER_TYPES.SAHIH },
+            { char: 'م', type: LETTER_TYPES.SAHIH },
+            { char: 'ي', type: LETTER_TYPES.YA }
+        ],
+        meaning: 'الرمي'
+    },
+    {
+        root: 'د ع و', type: 'ناقص واوي',
+        letters: [
+            { char: 'د', type: LETTER_TYPES.SAHIH },
+            { char: 'ع', type: LETTER_TYPES.SAHIH },
+            { char: 'و', type: LETTER_TYPES.WAW }
+        ],
+        meaning: 'الدعوة'
+    },
+    // مضعف
+    {
+        root: 'ش د د', type: 'مضعف',
+        letters: [
+            { char: 'ش', type: LETTER_TYPES.SAHIH },
+            { char: 'د', type: LETTER_TYPES.SAHIH },
+            { char: 'د', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'الشدة'
+    },
+    {
+        root: 'م د د', type: 'مضعف',
+        letters: [
+            { char: 'م', type: LETTER_TYPES.SAHIH },
+            { char: 'د', type: LETTER_TYPES.SAHIH },
+            { char: 'د', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'المد'
+    },
+    // مهموز
+    {
+        root: 'س أ ل', type: 'مهموز العين',
+        letters: [
+            { char: 'س', type: LETTER_TYPES.SAHIH },
+            { char: 'أ', type: LETTER_TYPES.HAMZA },
+            { char: 'ل', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'السؤال'
+    },
+    {
+        root: 'أ ك ل', type: 'مهموز الفاء',
+        letters: [
+            { char: 'أ', type: LETTER_TYPES.HAMZA },
+            { char: 'ك', type: LETTER_TYPES.SAHIH },
+            { char: 'ل', type: LETTER_TYPES.SAHIH }
+        ],
+        meaning: 'الأكل'
+    },
+    // لفيف مفروق
+    {
+        root: 'و ق ي', type: 'لفيف مفروق',
+        letters: [
+            { char: 'و', type: LETTER_TYPES.WAW },
+            { char: 'ق', type: LETTER_TYPES.SAHIH },
+            { char: 'ي', type: LETTER_TYPES.YA }
+        ],
+        meaning: 'الوقاية'
+    },
+    // لفيف مقرون
+    {
+        root: 'ط و ي', type: 'لفيف مقرون',
+        letters: [
+            { char: 'ط', type: LETTER_TYPES.SAHIH },
+            { char: 'و', type: LETTER_TYPES.WAW },
+            { char: 'ي', type: LETTER_TYPES.YA }
+        ],
+        meaning: 'الطي'
+    }
+];
+
+// سياقات جاهزة للجمل (تستخدم في المختبرات)
+const SENTENCE_CONTEXTS = [
+    { word: 'كَاتِب', sentence: 'أبدع الـ {blank} في صياغة الرواية.', meaning: 'من يكتب' },
+    { word: 'مَكْتُوب', sentence: 'كان النص {blank}ًا بخط واضح.', meaning: 'ما تمت كتابته' },
+    { word: 'عَالِم', sentence: 'الـ {blank} يدرك حقائق الأمور ببصيرته.', meaning: 'من اتصف بالعلم' },
+    { word: 'مَعْلُوم', sentence: 'أصبح هذا الأمر {blank}ًا لدى الجميع.', meaning: 'ما عُرف وثبت علمه' },
+    { word: 'تَعَلُّم', sentence: 'يحتاج {blank} اللغة إلى ممارسة مستمرة.', meaning: 'اكتساب العلم' },
+    { word: 'دَارِس', sentence: 'الطالب الـ {blank} يحقق نتائج أفضل.', meaning: 'من يدرس' },
+    { word: 'مَدْرُوس', sentence: 'هذا الموضوع {blank} في المقرر.', meaning: 'ما تمت دراسته' },
+    { word: 'قَاطِع', sentence: 'قدم المحامي دليلاً {blank}ًا لا يقبل الشك.', meaning: 'حاسم' },
+    { word: 'مَقْطُوع', sentence: 'هذا الحبل {blank} ولا يصلح للاستعمال.', meaning: 'ما وقع عليه القطع' },
+    { word: 'فَاتِح', sentence: 'كان القائد {blank}ًا للمدينة.', meaning: 'من يفتح' },
+    { word: 'مَفْتُوح', sentence: 'الباب {blank} منذ الصباح.', meaning: 'ما وقع عليه الفتح' },
+    { word: 'وَاعِد', sentence: 'الرجل {blank}ٌ بالوفاء بعهده.', meaning: 'من يَعِد' },
+    { word: 'مَوْعُود', sentence: 'جاء في الوقت {blank}ِ.', meaning: 'من وُعد بشيء' },
+    { word: 'يَعِد', sentence: 'هو {blank}ُ صديقه بالمساعدة.', meaning: 'يلتزم بشيء مستقبلًا' },
+    { word: 'قَال', sentence: '{blank} الطالب الحقَّ بوضوح.', meaning: 'نطق بالكلام' },
+    { word: 'قَائِل', sentence: 'كان الـ {blank} صادقًا في كلامه.', meaning: 'من يقول' },
+    { word: 'مَقُول', sentence: 'هذا كلام {blank} في موضعه.', meaning: 'ما قيل' },
+    { word: 'بَاع', sentence: '{blank} التاجر بضاعته بسرعة.', meaning: 'بادل السلعة بالثمن' },
+    { word: 'بَائِع', sentence: 'عرض الـ {blank} بضاعته في السوق.', meaning: 'من يبيع' },
+    { word: 'مَبِيع', sentence: 'كان المنتج {blank}ًا بسعر مناسب.', meaning: 'ما وقع عليه البيع' },
+    { word: 'رَامٍ', sentence: 'كان الـ {blank} دقيق الإصابة.', meaning: 'من يرمي' },
+    { word: 'مَرْمِيّ', sentence: 'الهدف {blank} بدقة.', meaning: 'ما وقع عليه الرمي' },
+    { word: 'رَمَى', sentence: '{blank} اللاعب الكرة بعيدًا.', meaning: 'ألقى شيئًا' },
+    { word: 'شَادّ', sentence: 'القوة التي يبذلها الـ {blank} كبيرة.', meaning: 'من يشد' },
+    { word: 'مَشْدُود', sentence: 'الحبل {blank} بإحكام.', meaning: 'ما وقع عليه الشد' },
+    { word: 'سَائِل', sentence: 'كان الـ {blank} حريصًا على معرفة الحقيقة.', meaning: 'من يسأل' },
+    { word: 'مَسْؤُول', sentence: 'أجاب الشخص الـ {blank} عن الاستفسار.', meaning: 'من وُجّه إليه السؤال' },
+    { word: 'جَالِس', sentence: 'كان الـ {blank} على المقعد الخشبي.', meaning: 'من يجلس' },
+    { word: 'مَجْلُوس', sentence: 'هذا المكان {blank} دائمًا.', meaning: 'ما يُجلس فيه' },
+    { word: 'وَاجِد', sentence: 'الـ {blank} للحل يصل إليه.', meaning: 'من يجد' },
+    { word: 'مَوْجُود', sentence: 'الكتاب {blank} في المكتبة.', meaning: 'ما وُجد' },
+];
+
+// بيانات التحولات اليدوية (للمختبر)
+const TRANSFORMATIONS_DATA = [
+    { type: 'إعلال', input: 'وَعَدَ', output: 'يَعِدُ', question: 'ما الظاهرة الصرفية في انتقال الفعل من «وَعَدَ» إلى «يَعِدُ»؟', options: ['حذف الواو','إدغام الدال','قلب الواو ألفًا','إبدال الهمزة'], answer: 'حذف الواو', explanation: 'الفعل «وَعَدَ» مثال واوي، وتحذف واوه في المضارع «يَعِدُ» وفق قاعدة صرفية معروفة.' },
+    { type: 'إعلال', input: 'قَوَلَ', output: 'قَالَ', question: 'ما التغيير الذي أدى إلى ظهور الألف في «قال»؟', options: ['قلب الواو ألفًا','حذف الواو','إدغام اللام','زيادة الألف'], answer: 'قلب الواو ألفًا', explanation: 'الواو في عين الفعل الأجوف تنقلب ألفًا في الماضي عند تحقق شروط الإعلال بالقلب.' },
+    { type: 'إعلال', input: 'بَيَعَ', output: 'بَاعَ', question: 'ما نوع الفعل «باع» من حيث الاعتلال؟', options: ['مثال','أجوف','ناقص','لفيف'], answer: 'أجوف', explanation: 'عين الفعل حرف علة، والجذر ب ي ع، ولذلك يسمى الفعل أجوف.' },
+    { type: 'إدغام', input: 'شَدَدَ', output: 'شَدَّ', question: 'ما الظاهرة في «شَدَّ»؟', options: ['الإدغام','الإعلال','الحذف','الإبدال'], answer: 'الإدغام', explanation: 'اجتمع حرفان متماثلان في «شَدَدَ»، فأُدغم أحدهما في الآخر فصارت «شَدَّ».' },
+    { type: 'إبدال', input: 'اِفْتَعَلَ (وعد)', output: 'اِتَّعَدَ', question: 'ما الإبدال الذي حدث في «اِتَّعَدَ»؟', options: ['قلب الواو تاء','قلب التاء واوًا','حذف الواو','زيادة همزة'], answer: 'قلب الواو تاء', explanation: 'في وزن افتعل من المثال الواوي، تقلب الواو تاء وتدغم في تاء الافتعال.' },
+    { type: 'حذف', input: 'رَمَيَ', output: 'رَمَى', question: 'ما التغيير الذي حدث في «رَمَى»؟', options: ['حذف الياء','قلب الياء ألفًا','إدغام','إبدال'], answer: 'قلب الياء ألفًا', explanation: 'في الفعل الناقص، تقلب الألف المقصورة في الماضي من الياء.' },
+];
+
+// تحليلات جاهزة
+const ANALYSIS_DATA = [
+    { word: 'كَاتِب', root: 'ك ت ب', pattern: 'فَاعِل', category: 'اسم فاعل' },
+    { word: 'مَكْتُوب', root: 'ك ت ب', pattern: 'مَفْعُول', category: 'اسم مفعول' },
+    { word: 'مُعَلِّم', root: 'ع ل م', pattern: 'مُفَعِّل', category: 'اسم فاعل' },
+    { word: 'اسْتِعْلَام', root: 'ع ل م', pattern: 'اسْتِفْعَال', category: 'مصدر' },
+    { word: 'مَقْطُوع', root: 'ق ط ع', pattern: 'مَفْعُول', category: 'اسم مفعول' },
+    { word: 'قَائِل', root: 'ق و ل', pattern: 'فَاعِل', category: 'اسم فاعل' },
+    { word: 'بَائِع', root: 'ب ي ع', pattern: 'فَاعِل', category: 'اسم فاعل' },
+    { word: 'مَرْمِيّ', root: 'ر م ي', pattern: 'مَفْعُول', category: 'اسم مفعول' },
+    { word: 'مَشْدُود', root: 'ش د د', pattern: 'مَفْعُول', category: 'اسم مفعول' },
+    { word: 'سَائِل', root: 'س أ ل', pattern: 'فَاعِل', category: 'اسم فاعل' },
+    { word: 'جَالِس', root: 'ج ل س', pattern: 'فَاعِل', category: 'اسم فاعل' },
+    { word: 'مَجْلُوس', root: 'ج ل س', pattern: 'مَفْعُول', category: 'اسم مفعول' },
+    { word: 'وَاجِد', root: 'و ج د', pattern: 'فَاعِل', category: 'اسم فاعل' },
+    { word: 'مَوْجُود', root: 'و ج د', pattern: 'مَفْعُول', category: 'اسم مفعول' },
+];
+
+// أسئلة السياق
+const CONTEXT_DATA = [
+    { sentence: 'الطالب المجتهد يحب ______ العلم.', options: ['تعلُّم','مكتوب','قاطع','مقطوع'], answer: 'تعلُّم', explanation: 'المطلوب مصدر يدل على اكتساب العلم، وهو «تعلُّم».' },
+    { sentence: 'كان ______ الرواية بارعًا في بناء الشخصيات.', options: ['كاتب','مكتوب','كتابة','مكتبة'], answer: 'كاتب', explanation: 'المطلوب اسم فاعل يدل على من يقوم بالكتابة.' },
+    { sentence: 'هذا الأمر أصبح ______ لدى الجميع.', options: ['عالم','معلوم','تعليم','استعلام'], answer: 'معلوم', explanation: '«معلوم» اسم مفعول يدل على الشيء الذي عُرف.' },
+    { sentence: 'قدّم المحامي دليلًا ______ لا يقبل الشك.', options: ['قاطعًا','مقطوعًا','تقاطعًا','انقطاعًا'], answer: 'قاطعًا', explanation: 'المعنى المقصود: دليل حاسم، ولذلك «قاطعًا».' },
+    { sentence: 'عرض ______ بضاعته في السوق.', options: ['بائع','مبيع','بيع','باع'], answer: 'بائع', explanation: 'المطلوب اسم فاعل من «باع» وهو «بائع».' },
+    { sentence: 'الحبل ______ بإحكام.', options: ['شادّ','مشدود','شديد','تشديد'], answer: 'مشدود', explanation: 'المطلوب اسم مفعول من «شدّ».' },
+    { sentence: 'كان ______ المدينة فاتحًا لأبوابها.', options: ['قاطع','مفتوح','فاتح','فتح'], answer: 'فاتح', explanation: 'اسم الفاعل من فتح هو فاتح.' },
+    { sentence: 'المكان ______ بالزوار.', options: ['مملوء','مالئ','ملء','إملاء'], answer: 'مملوء', explanation: 'اسم المفعول من ملأ هو مملوء.' },
+];
+
+// اكتشف القاعدة - مجموعات
+const DISCOVER_DATA = [
+    { examples: ['وعد → يعد', 'وجد → يجد', 'وصل → يصل'], rule: 'حذف الواو في المضارع للمثال الواوي', options: ['قلب الواو ألفًا','حذف الواو','إدغام','إبدال'], answer: 'حذف الواو', explanation: 'كل الأفعال مثال واوي، وتحذف واوها في المضارع.' },
+    { examples: ['قول → قال', 'صوم → صام', 'خوف → خاف'], rule: 'قلب الواو ألفًا في الأجوف الواوي', options: ['حذف الواو','قلب الواو ألفًا','إبدال الواو ياء','إدغام'], answer: 'قلب الواو ألفًا', explanation: 'الأجوف الواوي تقلب واوه ألفًا إذا تحركت وانفتح ما قبلها.' },
+    { examples: ['مدد → مدّ', 'شدد → شدّ', 'حبب → حبّ'], rule: 'إدغام المتماثلين في المضعف', options: ['إعلال بالقلب','إبدال','حذف','إدغام'], answer: 'إدغام', explanation: 'الحرفان المتماثلان أدغما في حرف واحد مشدد.' },
+];
+
+// الإنجازات
+const ACHIEVEMENTS = [
+    { id: 'first', name: 'أول تفاعل', icon: 'fa-flask', description: 'أجريت أول تفاعل صرفي.', condition: s => s.syntheses >= 1 },
+    { id: 'ten', name: 'الكيميائي المبتدئ', icon: 'fa-vial', description: 'أجريت 10 تفاعلات.', condition: s => s.syntheses >= 10 },
+    { id: 'words', name: 'جامع الكلمات', icon: 'fa-book', description: 'اكتشفت 20 كلمة.', condition: s => s.words.length >= 20 },
+    { id: 'combo5', name: 'سلسلة نارية', icon: 'fa-fire', description: 'حققت سلسلة من 5 إجابات صحيحة.', condition: s => s.bestCombo >= 5 },
+    { id: 'combo10', name: 'سيد المفاعل', icon: 'fa-atom', description: 'حققت سلسلة من 10 إجابات صحيحة.', condition: s => s.bestCombo >= 10 },
+    { id: 'score', name: 'ألف نقطة', icon: 'fa-star', description: 'حصلت على 1000 نقطة.', condition: s => s.score >= 1000 },
+];
+
+/* ============================================================
+   محرك الصرف (MorphologyEngine)
+============================================================ */
+
+const MorphologyEngine = {
+
+    // تطبيق قالب على جذر لإنتاج كلمة أولية
+    applyPattern(rootLetters, patternTemplate) {
+        let word = [];
+        const templateChars = patternTemplate.split(' ');
+        const rootChars = rootLetters.map(l => l.char);
+        let rootIndex = 0;
+        for (let i = 0; i < templateChars.length; i++) {
+            const c = templateChars[i];
+            if (c === 'ف' || c === 'ع' || c === 'ل') {
+                word.push(rootChars[rootIndex]);
+                rootIndex++;
+            } else {
+                word.push(c);
+            }
+        }
+        return word.join('');
+    },
+
+    // إدغام المتماثلين
+    applyAssimilation(word) {
+        // نبحث عن حرفين متتاليين متماثلين ساكنين أو متحركين
+        for (let i = 0; i < word.length - 1; i++) {
+            if (word[i] === word[i+1] && word[i] !== ' ') {
+                // إذا كانا متماثلين، نعيد الناتج مع حذف الأول وشد الثاني
+                let newWord = word.slice(0, i) + word[i+1] + word.slice(i+2);
+                return { word: newWord, rule: 'إدغام المتماثلين', position: i };
+            }
+        }
+        return { word, rule: null };
+    },
+
+    // إعلال بالقلب (واو/ياء متحركة بعد فتحة)
+    applyVowelWeakening(word, rootType) {
+        let newWord = word;
+        let rule = null;
+        let position = -1;
+
+        // قلب الواو/الياء ألفاً إذا كانت متحركة وما قبلها مفتوح
+        // نبحث عن واو أو ياء في الكلمة
+        for (let i = 0; i < newWord.length; i++) {
+            const ch = newWord[i];
+            if ((ch === 'و' || ch === 'ي') && i > 0) {
+                // نفترض أن ما قبلها مفتوح (نحن لا نمثل الحركات بدقة، لكن نطبق القاعدة الشائعة)
+                newWord = newWord.slice(0, i) + 'ا' + newWord.slice(i+1);
+                rule = `قلب ${ch} ألفاً لتحركها وانفتاح ما قبلها`;
+                position = i;
+                break;
+            }
+        }
+        return { word: newWord, rule, position };
+    },
+
+    // حذف حرف العلة في مواضع معينة (مثال: حذف الواو في مضارع المثال)
+    applyDeletion(word, rootType, patternType) {
+        let newWord = word;
+        let rule = null;
+        // إذا كان الجذر مثال واوي والوزن مضارع
+        if (rootType.includes('مثال واوي') && patternType === 'مضارع') {
+            // حذف الواو من بداية الكلمة إذا وجدت
+            if (newWord[0] === 'و') {
+                newWord = newWord.slice(1);
+                rule = 'حذف الواو في المضارع للمثال الواوي';
+            }
+        }
+        // حذف الياء في مواضع أخرى يمكن إضافتها لاحقًا
+        return { word: newWord, rule };
+    },
+
+    // إبدال الواو تاء في الافتعال
+    applySubstitution(word, rootType, patternTemplate) {
+        let newWord = word;
+        let rule = null;
+        // في افتعل، إذا كان فاء الجذر واوًا، تقلب الواو تاء وتدغم في تاء الافتعال
+        if (patternTemplate === 'ا ف ت ع ل' && rootType.includes('مثال واوي')) {
+            // نبحث عن الواو (بعد التاء)
+            const idx = newWord.indexOf('و');
+            if (idx !== -1) {
+                // نقلبها تاء وندغمها مع التاء السابقة
+                newWord = newWord.slice(0, idx) + 'ت' + newWord.slice(idx+1);
+                // الآن يجب إدغام التاءين المتتاليتين
+                const assim = this.applyAssimilation(newWord);
+                newWord = assim.word;
+                rule = 'قلب الواو تاءً وإدغامها في تاء الافتعال';
+            }
+        }
+        return { word: newWord, rule };
+    },
+
+    // الدالة الشاملة لاشتقاق كلمة من جذر ووزن
+    derive(rootLetters, rootType, patternTemplate, patternName) {
+        let stepByStep = [];
+        let word = this.applyPattern(rootLetters, patternTemplate);
+        stepByStep.push({ label: 'تطبيق الوزن', word });
+
+        // إدغام
+        const assimResult = this.applyAssimilation(word);
+        if (assimResult.rule) {
+            word = assimResult.word;
+            stepByStep.push({ label: assimResult.rule, word });
+        }
+
+        // إعلال بالقلب (للأجوف والناقص)
+        if (rootType.includes('أجوف') || rootType.includes('ناقص')) {
+            const weakResult = this.applyVowelWeakening(word, rootType);
+            if (weakResult.rule) {
+                word = weakResult.word;
+                stepByStep.push({ label: weakResult.rule, word });
+            }
+        }
+
+        // حذف
+        const delResult = this.applyDeletion(word, rootType, patternType);
+        if (delResult.rule) {
+            word = delResult.word;
+            stepByStep.push({ label: delResult.rule, word });
+        }
+
+        // إبدال
+        const substResult = this.applySubstitution(word, rootType, patternTemplate);
+        if (substResult.rule) {
+            word = substResult.word;
+            stepByStep.push({ label: substResult.rule, word });
+        }
+
+        // تنظيف نهائي: تحويل الهمزات، إلخ
+        word = word.replace(/أأ/g, 'آ');
+
+        return {
+            finalWord: word,
+            steps: stepByStep,
+            explanation: stepByStep.map(s => s.label).join(' ← ')
+        };
+    },
+
+    // تحليل كلمة إلى جذر ووزن (بسيطة)
+    analyze(word) {
+        // نبحث في الجذور والأوزان عن تطابق مع الكلمة
+        for (const root of ROOTS) {
+            for (const patternName in PATTERNS) {
+                const pattern = PATTERNS[patternName];
+                const result = this.derive(root.letters, root.type, pattern.template, patternName);
+                if (result.finalWord === word) {
+                    return { root: root.root, pattern: patternName, category: pattern.category || pattern.tense || pattern.type, steps: result.steps };
+                }
+            }
+        }
+        return null;
+    }
+};
+
+/* ============================================================
+   التطبيق الرئيسي
+============================================================ */
+
+const app = {
+
+    state: {
+        score: 0,
+        xp: 0,
+        level: 1,
+        combo: 0,
+        bestCombo: 0,
+        stars: 0,
+        syntheses: 0,
+        correct: 0,
+        wrong: 0,
+        words: [],
+        mistakes: [],
+        achievements: [],
+        completedLabs: [],
+        seenQuestions: []
+    },
+
+    currentLab: null,
+    currentQuestions: [],
+    questionIndex: 0,
+    currentQuestion: null,
+    selectedWordObj: null,
+
+    audioCtx: null,
+
+    init: function() {
+        this.loadState();
+        document.addEventListener("click", () => {
+            this.ensureAudio();
+        }, { once: true });
+        this.updateHeader();
+        this.updateHomeStats();
+    },
+
+    ensureAudio: function() {
+        if (!this.audioCtx) {
+            try {
+                this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {}
+        }
+        if (this.audioCtx && this.audioCtx.state === "suspended") {
+            this.audioCtx.resume();
+        }
+    },
+
+    playSound: function(type) {
+        this.ensureAudio();
+        if (!this.audioCtx) return;
+        const oscillator = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        oscillator.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        const now = this.audioCtx.currentTime;
+
+        if (type === "synthesize") {
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(440, now);
+            oscillator.frequency.exponentialRampToValueAtTime(880, now + .1);
+            gain.gain.setValueAtTime(.3, now);
+            gain.gain.exponentialRampToValueAtTime(.01, now + .3);
+            oscillator.start();
+            oscillator.stop(now + .3);
+        } else if (type === "success") {
+            oscillator.type = "triangle";
+            oscillator.frequency.setValueAtTime(600, now);
+            oscillator.frequency.setValueAtTime(800, now + .1);
+            oscillator.frequency.setValueAtTime(1000, now + .2);
+            gain.gain.setValueAtTime(.3, now);
+            gain.gain.exponentialRampToValueAtTime(.01, now + .5);
+            oscillator.start();
+            oscillator.stop(now + .5);
+        } else if (type === "error") {
+            oscillator.type = "sawtooth";
+            oscillator.frequency.setValueAtTime(150, now);
+            oscillator.frequency.linearRampToValueAtTime(100, now + .2);
+            gain.gain.setValueAtTime(.3, now);
+            gain.gain.linearRampToValueAtTime(.01, now + .2);
+            oscillator.start();
+            oscillator.stop(now + .2);
+        } else if (type === "level") {
+            oscillator.type = "triangle";
+            oscillator.frequency.setValueAtTime(500, now);
+            oscillator.frequency.setValueAtTime(700, now + .1);
+            oscillator.frequency.setValueAtTime(1000, now + .2);
+            oscillator.frequency.setValueAtTime(1300, now + .3);
+            gain.gain.setValueAtTime(.3, now);
+            gain.gain.exponentialRampToValueAtTime(.01, now + .8);
+            oscillator.start();
+            oscillator.stop(now + .8);
+        }
+    },
+
+    loadState: function() {
+        try {
+            const saved = localStorage.getItem("chemistry_roots_v3");
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                this.state = Object.assign(this.state, parsed);
+            }
+        } catch (e) {
+            console.warn("تعذر تحميل التقدم");
+        }
+    },
+
+    saveState: function() {
+        try {
+            localStorage.setItem("chemistry_roots_v3", JSON.stringify(this.state));
+        } catch (e) {}
+    },
+
+    updateHeader: function() {
+        document.getElementById("score-display").innerText = this.state.score;
+        document.getElementById("player-level").innerText = this.state.level;
+        const needed = this.xpNeeded();
+        const percentage = Math.min(100, (this.state.xp / needed) * 100);
+        document.getElementById("xp-text").innerText = `${this.state.xp} / ${needed}`;
+        document.getElementById("xp-bar").style.width = percentage + "%";
+    },
+
+    xpNeeded: function() {
+        return this.state.level * 100;
+    },
+
+    addXP: function(amount) {
+        this.state.xp += amount;
+        while (this.state.xp >= this.xpNeeded()) {
+            this.state.xp -= this.xpNeeded();
+            this.state.level++;
+            this.playSound("level");
+            this.toast(`🎉 ارتقيت إلى المستوى ${this.state.level}!`);
+        }
+        this.updateHeader();
+        this.saveState();
+    },
+
+    addScore: function(amount) {
+        this.state.score += amount;
+        if (this.state.score < 0) this.state.score = 0;
+        this.updateHeader();
+        this.checkAchievements();
+    },
+
+    registerCorrect: function(points = 50) {
+        this.state.correct++;
+        this.state.combo++;
+        if (this.state.combo > this.state.bestCombo) this.state.bestCombo = this.state.combo;
+        let bonus = 0;
+        if (this.state.combo >= 3) bonus = 10;
+        if (this.state.combo >= 5) bonus = 20;
+        if (this.state.combo >= 10) bonus = 40;
+        this.addScore(points + bonus);
+        this.addXP(20);
+        this.updateGameHUD();
+        if (this.state.combo >= 3) {
+            this.toast(`🔥 سلسلة ${this.state.combo} — مكافأة +${bonus}`);
+        }
+        this.checkAchievements();
+    },
+
+    registerWrong: function(question) {
+        this.state.wrong++;
+        this.state.combo = 0;
+        if (question) {
+            const exists = this.state.mistakes.some(m => JSON.stringify(m) === JSON.stringify(question));
+            if (!exists) {
+                this.state.mistakes.push(question);
+            }
+        }
+        this.addScore(-5);
+        this.updateGameHUD();
+        this.saveState();
+    },
+
+    checkAchievements: function() {
+        ACHIEVEMENTS.forEach(a => {
+            if (!this.state.achievements.includes(a.id) && a.condition(this.state)) {
+                this.state.achievements.push(a.id);
+                this.addScore(100);
+                this.toast(`🏆 إنجاز جديد: ${a.name}`);
+                this.playSound("success");
+            }
+        });
+        this.saveState();
+        this.updateHomeStats();
+    },
+
+    updateHomeStats: function() {
+        document.getElementById("home-combo").innerText = this.state.bestCombo;
+        document.getElementById("home-synth").innerText = this.state.syntheses;
+        document.getElementById("home-words").innerText = this.state.words.length;
+        document.getElementById("home-achievements").innerText = this.state.achievements.length;
+    },
+
+    shuffle: function(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    },
+
+    goHome: function() {
+        document.getElementById("game-screen").classList.add("hidden");
+        document.getElementById("home-screen").classList.remove("hidden");
+        this.updateHomeStats();
+        this.updateHeader();
+    },
+
+    startLab: function(lab) {
+        this.currentLab = lab;
+        this.questionIndex = 0;
+        this.buildQuestions(lab);
+        document.getElementById("home-screen").classList.add("hidden");
+        document.getElementById("game-screen").classList.remove("hidden");
+        this.setLabHeader(lab);
+        this.renderQuestion();
+    },
+
+    setLabHeader: function(lab) {
+        const titles = {
+            synthesis: "مختبر التركيب",
+            analysis: "مختبر التحليل",
+            transform: "مختبر التحولات",
+            derivation: "مختبر الاشتقاق",
+            context: "مختبر السياق",
+            mixed: "المفاعل الشامل",
+            weakening: "مختبر الإعلال",
+            substitution: "مختبر الإبدال",
+            assimilation: "مختبر الإدغام",
+            deletion: "مختبر الحذف",
+            discover: "اكتشف القاعدة",
+            battle: "المعركة الصرفية",
+            free: "المختبر الحر"
+        };
+        const instructions = {
+            synthesis: "ركّب الجذر مع الوزن، ثم وظّف الكلمة في السياق.",
+            analysis: "حلّل الكلمة واكتشف جذرها ووزنها ونوعها.",
+            transform: "اكتشف القاعدة الصرفية التي صنعت التحول.",
+            derivation: "اكتشف المشتق المناسب للجذر والوظيفة المطلوبة.",
+            context: "اختر الكلمة التي تناسب السياق والمعنى.",
+            mixed: "تحديات متنوعة تجمع مهارات الصرف والاشتقاق.",
+            weakening: "اكتشف قواعد الإعلال بالقلب والحذف.",
+            substitution: "تعرف على الإبدال الصرفي في الاشتقاقات.",
+            assimilation: "لاحظ كيف يُدغم المتماثلان والمتقاربان.",
+            deletion: "تعرف على مواضع حذف حروف العلة والهمزة.",
+            discover: "استنتج القاعدة الصرفية من الأمثلة.",
+            battle: "تحدّيات سريعة لبناء الكلمات واختيار العمليات.",
+            free: "أدخل جذرًا واختر وزنًا وشاهد الناتج والتفسير."
+        };
+        document.getElementById("game-title").innerText = titles[lab] || lab;
+        document.getElementById("game-instruction").innerText = instructions[lab] || "";
+    },
+
+    buildQuestions: function(lab) {
+        let questions = [];
+
+        if (lab === "synthesis") {
+            // توليد أسئلة تركيب: نأخذ جذورًا وأوزانًا ونطلب اختيار الوزن الصحيح
+            ROOTS.forEach(root => {
+                // نأخذ بعض الأوزان المناسبة لكل جذر (يمكن استخدام أوزان متعددة)
+                const patterns = ["فَاعِل", "مَفْعُول", "فَعَلَ", "تَفْعِيل", "فَعَّال"];
+                patterns.forEach(patternName => {
+                    const result = MorphologyEngine.derive(root.letters, root.type, PATTERNS[patternName].template, patternName);
+                    if (result.finalWord && !questions.some(q => q.type === 'synthesis' && q.root.root === root.root && q.pattern === patternName)) {
+                        questions.push({
+                            type: 'synthesis',
+                            root: root,
+                            pattern: patternName,
+                            result: result
+                        });
+                    }
+                });
+            });
+        } else if (lab === "analysis") {
+            questions = ANALYSIS_DATA.map(x => ({
+                type: 'analysis',
+                data: x
+            }));
+        } else if (lab === "transform") {
+            questions = TRANSFORMATIONS_DATA.map(x => ({
+                type: 'transform',
+                data: x
+            }));
+        } else if (lab === "context") {
+            questions = CONTEXT_DATA.map(x => ({
+                type: 'context',
+                data: x
+            }));
+        } else if (lab === "derivation") {
+            // نأخذ مشتقات من المحرك
+            ROOTS.forEach(root => {
+                const patterns = ["فَاعِل", "مَفْعُول", "فَعَّال", "مِفْعَال", "تَفْعِيل"];
+                patterns.forEach(patternName => {
+                    const result = MorphologyEngine.derive(root.letters, root.type, PATTERNS[patternName].template, patternName);
+                    if (result.finalWord) {
+                        questions.push({
+                            type: 'derivation',
+                            root: root,
+                            pattern: patternName,
+                            result: result
+                        });
+                    }
+                });
+            });
+        } else if (lab === "mixed") {
+            // مزيج من جميع الأنواع
+            const all = [];
+            ROOTS.forEach(root => {
+                ["فَاعِل", "مَفْعُول", "فَعَلَ"].forEach(patternName => {
+                    const result = MorphologyEngine.derive(root.letters, root.type, PATTERNS[patternName].template, patternName);
+                    if (result.finalWord) all.push({ type: 'synthesis', root, pattern: patternName, result });
+                });
+            });
+            ANALYSIS_DATA.forEach(x => all.push({ type: 'analysis', data: x }));
+            TRANSFORMATIONS_DATA.forEach(x => all.push({ type: 'transform', data: x }));
+            CONTEXT_DATA.forEach(x => all.push({ type: 'context', data: x }));
+            questions = all;
+        } else if (lab === "weakening") {
+            // أسئلة عن الإعلال
+            const examples = [
+                { root: ROOTS.find(r => r.root === 'ق و ل'), pattern: 'فَعَلَ', before: 'قَوَلَ', after: 'قَالَ', rule: 'قلب الواو ألفًا' },
+                { root: ROOTS.find(r => r.root === 'ب ي ع'), pattern: 'فَعَلَ', before: 'بَيَعَ', after: 'بَاعَ', rule: 'قلب الياء ألفًا' },
+                { root: ROOTS.find(r => r.root === 'و ع د'), pattern: 'يَفْعَلُ', before: 'يَوْعِدُ', after: 'يَعِدُ', rule: 'حذف الواو' },
+            ];
+            examples.forEach(ex => {
+                questions.push({
+                    type: 'weakening',
+                    data: ex
+                });
+            });
+        } else if (lab === "substitution") {
+            // أسئلة عن الإبدال
+            const examples = [
+                { root: ROOTS.find(r => r.root === 'و ع د'), pattern: 'افْتَعَلَ', before: 'اِفْتَعَدَ (غير مدغمة)', after: 'اِتَّعَدَ', rule: 'قلب الواو تاءً وإدغامها' },
+                { root: ROOTS.find(r => r.root === 'أ ك ل'), pattern: 'افْتَعَلَ', before: 'اِئْتَكَلَ', after: 'اِتَّكَلَ', rule: 'قلب الهمزة تاءً' },
+            ];
+            examples.forEach(ex => {
+                questions.push({
+                    type: 'substitution',
+                    data: ex
+                });
+            });
+        } else if (lab === "assimilation") {
+            // أسئلة عن الإدغام
+            const examples = [
+                { root: ROOTS.find(r => r.root === 'ش د د'), pattern: 'فَعَلَ', before: 'شَدَدَ', after: 'شَدَّ', rule: 'إدغام المتماثلين' },
+                { root: ROOTS.find(r => r.root === 'م د د'), pattern: 'فَعَلَ', before: 'مَدَدَ', after: 'مَدَّ', rule: 'إدغام المتماثلين' },
+            ];
+            examples.forEach(ex => {
+                questions.push({
+                    type: 'assimilation',
+                    data: ex
+                });
+            });
+        } else if (lab === "deletion") {
+            // أسئلة عن الحذف
+            const examples = [
+                { root: ROOTS.find(r => r.root === 'و ع د'), pattern: 'يَفْعَلُ', before: 'يَوْعِدُ', after: 'يَعِدُ', rule: 'حذف الواو' },
+                { root: ROOTS.find(r => r.root === 'ر م ي'), pattern: 'فَعَلَ', before: 'رَمَيَ', after: 'رَمَى', rule: 'قلب الياء ألفًا (مع اعتبارها حذفًا في بعض التحليلات)' },
+            ];
+            examples.forEach(ex => {
+                questions.push({
+                    type: 'deletion',
+                    data: ex
+                });
+            });
+        } else if (lab === "discover") {
+            questions = DISCOVER_DATA.map(x => ({
+                type: 'discover',
+                data: x
+            }));
+        } else if (lab === "battle") {
+            // معركة: نطرح أسئلة سريعة من أنواع متعددة
+            const all = [];
+            ROOTS.forEach(root => {
+                ["فَاعِل", "مَفْعُول", "فَعَلَ"].forEach(patternName => {
+                    const result = MorphologyEngine.derive(root.letters, root.type, PATTERNS[patternName].template, patternName);
+                    if (result.finalWord) all.push({ type: 'synthesis', root, pattern: patternName, result });
+                });
+            });
+            TRANSFORMATIONS_DATA.forEach(x => all.push({ type: 'transform', data: x }));
+            questions = all;
+        } else if (lab === "free") {
+            // المختبر الحر: لا أسئلة مسبقة، سنعرض واجهة خاصة
+            this.renderFreeLab();
+            return;
+        }
+
+        questions = this.shuffle(questions);
+        // منع تكرار الأسئلة
+        questions = questions.filter(q => {
+            const id = this.questionId(q);
+            if (this.state.seenQuestions.includes(id)) return false;
+            this.state.seenQuestions.push(id);
+            return true;
+        });
+        if (questions.length === 0) {
+            this.state.seenQuestions = [];
+            this.saveState();
+            this.buildQuestions(lab);
+            return;
+        }
+        this.currentQuestions = questions;
+        this.saveState();
+    },
+
+    questionId: function(q) {
+        if (q.type === 'synthesis') return `syn_${q.root.root}_${q.pattern}`;
+        if (q.type === 'analysis') return `ana_${q.data.word}`;
+        if (q.type === 'transform') return `tr_${q.data.input}_${q.data.output}`;
+        if (q.type === 'context') return `ctx_${q.data.sentence}`;
+        if (q.type === 'derivation') return `der_${q.root.root}_${q.pattern}`;
+        if (q.type === 'weakening') return `weak_${q.data.before}_${q.data.after}`;
+        if (q.type === 'substitution') return `sub_${q.data.before}_${q.data.after}`;
+        if (q.type === 'assimilation') return `ass_${q.data.before}_${q.data.after}`;
+        if (q.type === 'deletion') return `del_${q.data.before}_${q.data.after}`;
+        if (q.type === 'discover') return `disc_${q.data.rule}`;
+        return Math.random().toString();
+    },
+
+    renderQuestion: function() {
+        if (this.questionIndex >= this.currentQuestions.length) {
+            this.finishLab();
+            return;
+        }
+        this.currentQuestion = this.currentQuestions[this.questionIndex];
+        const q = this.currentQuestion;
+        document.getElementById("question-counter").innerText = `التحدي ${this.questionIndex+1} / ${this.currentQuestions.length}`;
+        document.getElementById("question-progress").style.width = ((this.questionIndex / this.currentQuestions.length) * 100) + "%";
+
+        switch (q.type) {
+            case 'synthesis': this.renderSynthesis(q); break;
+            case 'analysis': this.renderAnalysis(q); break;
+            case 'transform': this.renderTransform(q); break;
+            case 'context': this.renderContext(q); break;
+            case 'derivation': this.renderDerivation(q); break;
+            case 'weakening': this.renderWeakening(q); break;
+            case 'substitution': this.renderSubstitution(q); break;
+            case 'assimilation': this.renderAssimilation(q); break;
+            case 'deletion': this.renderDeletion(q); break;
+            case 'discover': this.renderDiscover(q); break;
+            default: this.renderQuestion();
+        }
+    },
+
+    renderSynthesis: function(q) {
+        const root = q.root;
+        const result = q.result;
+        const patterns = this.shuffle(Object.keys(PATTERNS).slice(0, 8)); // نعرض 8 أوزان عشوائية
+        const targetPattern = q.pattern;
+        const sentence = this.findSentenceForWord(result.finalWord) || { sentence: 'استعمل الكلمة في جملة من عندك.', meaning: '' };
+
+        document.getElementById("game-content").innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-panel rounded-2xl p-7 flex flex-col items-center justify-center relative overflow-hidden border-cyan-500/30">
+                <div class="absolute inset-0 bg-cyan-900/20 animate-pulse"></div>
+                <i class="fas fa-atom text-7xl text-cyan-500 mb-4 opacity-50 absolute -right-5 -top-5 floating-icon"></i>
+                <h3 class="text-lg text-slate-300 z-10 mb-3">الجذر الأساسي</h3>
+                <div id="root-display" class="text-5xl font-black text-white z-10 tracking-[0.3em] synthesizing">${root.root}</div>
+                <div class="mt-5 z-10 text-xs text-slate-400">النوع: <span class="text-cyan-400 font-bold">${root.type}</span></div>
+            </div>
+            <div class="md:col-span-2 glass-panel rounded-2xl p-6 border-blue-500/30">
+                <h3 class="text-lg text-slate-300 mb-5"><i class="fas fa-vials text-blue-400 ml-2"></i> اختر الوزن الصرفي المطلوب</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    ${patterns.map(pattern => `
+                        <button class="pattern-btn bg-blue-900/50 hover:bg-cyan-600 border border-blue-400/50 text-white font-bold py-4 px-3 rounded-xl shadow-lg"
+                                onclick="app.synthesize('${this.escape(pattern)}','${this.escape(targetPattern)}')">
+                            ${pattern}
+                        </button>
+                    `).join("")}
+                </div>
+                <div class="mt-6 bg-slate-900/60 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm text-slate-400">الهدف:</p>
+                    <p class="text-xl font-bold text-yellow-400 mt-1">${PATTERNS[targetPattern].category || PATTERNS[targetPattern].tense || ''}</p>
+                </div>
+            </div>
+        </div>
+        <div id="synthesis-result" class="mt-7"></div>`;
+    },
+
+    synthesize: function(pattern, targetPattern) {
+        const q = this.currentQuestion;
+        const buttons = document.querySelectorAll(".pattern-btn");
+        buttons.forEach(b => b.disabled = true);
+        const correct = pattern === targetPattern;
+        const result = document.getElementById("synthesis-result");
+        if (correct) {
+            this.playSound("synthesize");
+            this.state.syntheses++;
+            const word = q.result.finalWord;
+            if (!this.state.words.includes(word)) this.state.words.push(word);
+            result.innerHTML = `
+            <div class="glass-panel rounded-2xl p-7 border-emerald-500/40 pop text-center">
+                <i class="fas fa-flask text-5xl text-cyan-400 synthesizing mb-4"></i>
+                <div class="text-4xl font-black text-white mb-3">${word}</div>
+                <div class="text-cyan-400 font-bold mb-2">${q.root.root} + ${q.pattern}</div>
+                <p class="text-slate-300">${q.result.explanation}</p>
+                <div class="mt-6 bg-slate-900/60 rounded-xl p-5 text-xl leading-loose">
+                    ${this.findSentenceForWord(word)?.sentence.replace('{blank}', `<span class="text-yellow-400 font-black">${word}</span>`) || 'استعمل الكلمة في جملة من عندك.'}
+                </div>
+                <div class="mt-6">
+                    <button onclick="app.nextQuestion()" class="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-8 py-3 rounded-full font-bold">متابعة <i class="fas fa-arrow-left mr-2"></i></button>
+                    <button onclick="app.showMicroscope('${q.root.root}','${q.pattern}','${word}')" class="mt-3 bg-slate-700 hover:bg-slate-600 px-6 py-2 rounded-full text-sm"><i class="fas fa-microscope ml-2"></i> المجهر الصرفي</button>
+                </div>
+            </div>`;
+            this.registerCorrect(30);
+            this.saveState();
+        } else {
+            this.playSound("error");
+            result.innerHTML = `
+            <div class="glass-panel rounded-2xl p-6 border-red-500/40 answer-wrong">
+                <div class="text-red-400 font-bold text-xl mb-3"><i class="fas fa-times-circle ml-2"></i> تفاعل غير صحيح</div>
+                <p class="text-slate-300">هذا الوزن لا ينتج الكلمة المطلوبة.</p>
+                <button onclick="app.showHint()" class="mt-5 bg-slate-700 hover:bg-slate-600 px-6 py-2 rounded-full"><i class="fas fa-lightbulb ml-2 text-yellow-400"></i> تلميح</button>
+                <button onclick="app.enableSynthesisButtons()" class="mt-5 mr-2 bg-cyan-800 hover:bg-cyan-700 px-6 py-2 rounded-full">المحاولة مرة أخرى</button>
+            </div>`;
+            this.registerWrong(q);
+        }
+    },
+
+    enableSynthesisButtons: function() {
+        document.querySelectorAll(".pattern-btn").forEach(b => b.disabled = false);
+    },
+
+    renderAnalysis: function(q) {
+        const d = q.data;
+        const roots = this.shuffle([d.root, ...this.shuffle(ROOTS.map(r => r.root).filter(x => x !== d.root)).slice(0, 3)]);
+        const patterns = this.shuffle([d.pattern, "فَاعِل", "مَفْعُول", "تَفْعِيل"]);
+        const categories = this.shuffle([d.category, "فعل ماضٍ", "اسم مفعول", "مصدر"]);
+
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-7 border-purple-500/30">
+            <div class="text-center mb-8">
+                <p class="text-slate-400 mb-3">حلّل الكلمة الآتية</p>
+                <div class="text-5xl md:text-6xl font-black text-purple-300 synthesizing">${d.word}</div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-7">
+                <div>
+                    <h3 class="font-bold mb-3"><i class="fas fa-dna text-cyan-400 ml-2"></i> الجذر</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        ${roots.map(x => `<button class="choice-btn bg-slate-800 hover:bg-purple-700 border border-slate-700 rounded-xl p-3 font-bold" onclick="app.answerAnalysis('root','${this.escape(x)}')">${x}</button>`).join("")}
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-3"><i class="fas fa-vial text-blue-400 ml-2"></i> الوزن</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        ${patterns.map(x => `<button class="choice-btn bg-slate-800 hover:bg-blue-700 border border-slate-700 rounded-xl p-3 font-bold" onclick="app.answerAnalysis('pattern','${this.escape(x)}')">${x}</button>`).join("")}
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-3"><i class="fas fa-tag text-yellow-400 ml-2"></i> النوع</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        ${categories.map(x => `<button class="choice-btn bg-slate-800 hover:bg-yellow-700 border border-slate-700 rounded-xl p-3 font-bold" onclick="app.answerAnalysis('category','${this.escape(x)}')">${x}</button>`).join("")}
+                    </div>
+                </div>
+            </div>
+            <div id="analysis-feedback" class="mt-7"></div>
+        </div>`;
+    },
+
+    analysisAnswers: {},
+
+    answerAnalysis: function(kind, value) {
+        const d = this.currentQuestion.data;
+        if (!this.analysisAnswers) this.analysisAnswers = {};
+        this.analysisAnswers[kind] = value;
+        const correct = this.analysisAnswers.root === d.root && this.analysisAnswers.pattern === d.pattern && this.analysisAnswers.category === d.category;
+        if (this.analysisAnswers.root && this.analysisAnswers.pattern && this.analysisAnswers.category) {
+            if (correct) {
+                this.playSound("success");
+                document.getElementById("analysis-feedback").innerHTML = `
+                <div class="bg-emerald-900/20 border border-emerald-500/40 rounded-xl p-6 text-center pop">
+                    <i class="fas fa-check-circle text-5xl text-emerald-400 mb-4"></i>
+                    <h3 class="text-2xl font-black">تحليل صحيح</h3>
+                    <p class="text-slate-300 mt-3">الجذر: <strong>${d.root}</strong><br>الوزن: <strong>${d.pattern}</strong><br>النوع: <strong>${d.category}</strong></p>
+                    <button onclick="app.nextQuestion()" class="mt-5 bg-emerald-600 hover:bg-emerald-500 px-8 py-3 rounded-full font-bold">التالي</button>
+                </div>`;
+                this.registerCorrect(70);
+            } else {
+                this.playSound("error");
+                document.getElementById("analysis-feedback").innerHTML = `
+                <div class="bg-red-900/20 border border-red-500/40 rounded-xl p-6 text-center">
+                    <i class="fas fa-times-circle text-4xl text-red-400 mb-3"></i>
+                    <p class="text-red-300 font-bold">هناك خطأ في التحليل.</p>
+                    <button onclick="app.analysisAnswers={};app.renderQuestion()" class="mt-4 bg-slate-700 px-6 py-2 rounded-full">إعادة المحاولة</button>
+                </div>`;
+                this.registerWrong(this.currentQuestion);
+                this.analysisAnswers = {};
+            }
+        }
+    },
+
+    renderTransform: function(q) {
+        const d = q.data;
+        const options = this.shuffle(d.options);
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-8 border-emerald-500/30">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-emerald-900/30 border border-emerald-500/30 px-5 py-2 rounded-full text-emerald-400 mb-5"><i class="fas fa-dna ml-2"></i> ${d.type}</div>
+                <div class="flex items-center justify-center gap-4 text-3xl md:text-5xl font-black">
+                    <span class="text-slate-300">${d.input}</span>
+                    <i class="fas fa-arrow-left text-cyan-400"></i>
+                    <span class="text-emerald-400 synthesizing">${d.output}</span>
+                </div>
+                <h3 class="text-xl font-bold mt-8">${d.question}</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                ${options.map(o => `<button onclick="app.answerTransform('${this.escape(o)}')" class="choice-btn bg-slate-800 hover:bg-emerald-700 border border-slate-700 p-5 rounded-xl font-bold text-lg">${o}</button>`).join("")}
+            </div>
+            <div id="transform-feedback" class="mt-7"></div>
+        </div>`;
+    },
+
+    answerTransform: function(answer) {
+        const d = this.currentQuestion.data;
+        if (answer === d.answer) {
+            this.playSound("success");
+            document.getElementById("transform-feedback").innerHTML = `
+            <div class="bg-emerald-900/20 border border-emerald-500/40 rounded-xl p-6 text-center pop">
+                <i class="fas fa-check-circle text-5xl text-emerald-400 mb-3"></i>
+                <h3 class="text-2xl font-black">أحسنت!</h3>
+                <p class="text-slate-300 mt-3 leading-loose">${d.explanation}</p>
+                <button onclick="app.nextQuestion()" class="mt-5 bg-emerald-600 hover:bg-emerald-500 px-8 py-3 rounded-full font-bold">التالي</button>
+            </div>`;
+            this.registerCorrect(80);
+        } else {
+            this.playSound("error");
+            document.getElementById("transform-feedback").innerHTML = `
+            <div class="bg-red-900/20 border border-red-500/40 rounded-xl p-6 text-center">
+                <i class="fas fa-times-circle text-4xl text-red-400 mb-3"></i>
+                <p class="font-bold text-red-300">إجابة غير صحيحة.</p>
+                <button onclick="app.showHint()" class="mt-4 bg-slate-700 hover:bg-slate-600 px-6 py-2 rounded-full"><i class="fas fa-lightbulb text-yellow-400 ml-2"></i> تلميح</button>
+                <button onclick="app.nextQuestion()" class="mt-4 mr-2 bg-slate-800 px-6 py-2 rounded-full">تجاوز</button>
+            </div>`;
+            this.registerWrong(this.currentQuestion);
+        }
+    },
+
+    renderContext: function(q) {
+        const d = q.data;
+        const options = this.shuffle(d.options);
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-8 border-pink-500/30">
+            <div class="flex items-center gap-3 mb-7">
+                <i class="fas fa-book-open text-3xl text-pink-400"></i>
+                <h3 class="text-xl font-bold">اختر الكلمة الأنسب للسياق</h3>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-700 rounded-2xl p-8 text-2xl md:text-3xl leading-loose text-center">${d.sentence}</div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-7">
+                ${options.map(o => `<button onclick="app.answerContext('${this.escape(o)}')" class="choice-btn bg-slate-800 hover:bg-pink-700 border border-slate-700 p-4 rounded-xl font-bold text-lg">${o}</button>`).join("")}
+            </div>
+            <div id="context-feedback" class="mt-7"></div>
+        </div>`;
+    },
+
+    answerContext: function(answer) {
+        const d = this.currentQuestion.data;
+        if (answer === d.answer) {
+            this.playSound("success");
+            document.getElementById("context-feedback").innerHTML = `
+            <div class="bg-emerald-900/20 border border-emerald-500/40 rounded-xl p-6 text-center pop">
+                <i class="fas fa-check-circle text-5xl text-emerald-400 mb-3"></i>
+                <h3 class="text-2xl font-black">اختيار موفق</h3>
+                <p class="text-slate-300 mt-3">${d.explanation}</p>
+                <button onclick="app.nextQuestion()" class="mt-5 bg-emerald-600 hover:bg-emerald-500 px-8 py-3 rounded-full font-bold">التالي</button>
+            </div>`;
+            this.registerCorrect(60);
+        } else {
+            this.playSound("error");
+            document.getElementById("context-feedback").innerHTML = `
+            <div class="bg-red-900/20 border border-red-500/40 rounded-xl p-6 text-center">
+                <i class="fas fa-times-circle text-4xl text-red-400 mb-3"></i>
+                <p class="text-red-300 font-bold">ليست الكلمة الأنسب لهذا السياق.</p>
+                <button onclick="app.nextQuestion()" class="mt-4 bg-slate-700 px-6 py-2 rounded-full">التالي</button>
+            </div>`;
+            this.registerWrong(this.currentQuestion);
+        }
+    },
+
+    renderDerivation: function(q) {
+        const root = q.root;
+        const result = q.result;
+        const words = this.shuffle(root.words || []); // قد لا تكون موجودة، نستخدم المحرك
+        const target = result.finalWord;
+        const options = this.shuffle([target, ...ROOTS.filter(r => r.root !== root.root).slice(0, 2).map(r => MorphologyEngine.derive(r.letters, r.type, PATTERNS[q.pattern].template, q.pattern).finalWord)]);
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-8 border-yellow-500/30">
+            <div class="text-center">
+                <div class="text-sm text-slate-400 mb-3">الجذر</div>
+                <div class="text-5xl font-black text-cyan-400 mb-7">${root.root}</div>
+                <h3 class="text-xl font-bold mb-6">أي مشتق يحقق الوظيفة الآتية؟</h3>
+                <div class="inline-block bg-yellow-900/20 border border-yellow-500/30 rounded-xl px-7 py-4 mb-8"><i class="fas fa-tag text-yellow-400 ml-2"></i> ${PATTERNS[q.pattern].category || PATTERNS[q.pattern].tense}</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    ${options.map(w => `<button onclick="app.answerDerivation('${this.escape(w)}','${this.escape(target)}')" class="choice-btn bg-slate-800 hover:bg-yellow-700 border border-slate-700 p-5 rounded-xl font-bold text-2xl">${w}</button>`).join("")}
+                </div>
+                <div id="derivation-feedback" class="mt-7"></div>
+            </div>
+        </div>`;
+    },
+
+    answerDerivation: function(answer, correctAnswer) {
+        const q = this.currentQuestion;
+        if (answer === correctAnswer) {
+            this.playSound("success");
+            document.getElementById("derivation-feedback").innerHTML = `
+            <div class="bg-emerald-900/20 border border-emerald-500/40 rounded-xl p-6 text-center pop">
+                <i class="fas fa-check-circle text-5xl text-emerald-400 mb-3"></i>
+                <h3 class="text-2xl font-black">مشتق صحيح</h3>
+                <p class="text-slate-300 mt-3">${answer} — ${q.pattern}</p>
+                <button onclick="app.nextQuestion()" class="mt-5 bg-emerald-600 px-8 py-3 rounded-full font-bold">التالي</button>
+            </div>`;
+            this.registerCorrect(70);
+        } else {
+            this.playSound("error");
+            document.getElementById("derivation-feedback").innerHTML = `
+            <div class="bg-red-900/20 border border-red-500/40 rounded-xl p-6 text-center">
+                <p class="text-red-300 font-bold">هذا ليس المشتق المطلوب.</p>
+                <button onclick="app.nextQuestion()" class="mt-4 bg-slate-700 px-6 py-2 rounded-full">التالي</button>
+            </div>`;
+            this.registerWrong(q);
+        }
+    },
+
+    // مختبرات جديدة
+    renderWeakening: function(q) {
+        const d = q.data;
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-8 border-blue-500/30">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-blue-900/30 border border-blue-500/30 px-5 py-2 rounded-full text-blue-400 mb-5"><i class="fas fa-water ml-2"></i> الإعلال</div>
+                <div class="flex items-center justify-center gap-4 text-3xl md:text-5xl font-black">
+                    <span class="text-slate-300">${d.before}</span>
+                    <i class="fas fa-arrow-left text-cyan-400"></i>
+                    <span class="text-blue-400 synthesizing">${d.after}</span>
+                </div>
+                <h3 class="text-xl font-bold mt-8">ما القاعدة التي حدثت؟</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                ${this.shuffle(['قلب حرف العلة ألفاً','حذف حرف العلة','إدغام','إبدال']).map(o => `<button onclick="app.answerWeakening('${this.escape(o)}','${this.escape(d.rule)}')" class="choice-btn bg-slate-800 hover:bg-blue-700 border border-slate-700 p-5 rounded-xl font-bold text-lg">${o}</button>`).join("")}
+            </div>
+            <div id="weakening-feedback" class="mt-7"></div>
+        </div>`;
+    },
+
+    answerWeakening: function(answer, correct) {
+        if (answer === correct) {
+            this.playSound("success");
+            document.getElementById("weakening-feedback").innerHTML = `
+            <div class="bg-emerald-900/20 border border-emerald-500/40 rounded-xl p-6 text-center pop">
+                <i class="fas fa-check-circle text-5xl text-emerald-400 mb-3"></i>
+                <h3 class="text-2xl font-black">صحيح!</h3>
+                <button onclick="app.nextQuestion()" class="mt-5 bg-emerald-600 px-8 py-3 rounded-full font-bold">التالي</button>
+            </div>`;
+            this.registerCorrect(70);
+        } else {
+            this.playSound("error");
+            document.getElementById("weakening-feedback").innerHTML = `
+            <div class="bg-red-900/20 border border-red-500/40 rounded-xl p-6 text-center">
+                <p class="text-red-300 font-bold">إجابة غير صحيحة.</p>
+                <button onclick="app.nextQuestion()" class="mt-4 bg-slate-700 px-6 py-2 rounded-full">التالي</button>
+            </div>`;
+            this.registerWrong(this.currentQuestion);
+        }
+    },
+
+    renderSubstitution: function(q) {
+        const d = q.data;
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-8 border-teal-500/30">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-teal-900/30 border border-teal-500/30 px-5 py-2 rounded-full text-teal-400 mb-5"><i class="fas fa-exchange-alt ml-2"></i> الإبدال</div>
+                <div class="flex items-center justify-center gap-4 text-3xl md:text-5xl font-black">
+                    <span class="text-slate-300">${d.before}</span>
+                    <i class="fas fa-arrow-left text-cyan-400"></i>
+                    <span class="text-teal-400 synthesizing">${d.after}</span>
+                </div>
+                <h3 class="text-xl font-bold mt-8">ما الإبدال الذي حدث؟</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                ${this.shuffle(['قلب الواو تاءً','قلب الياء همزة','قلب الهمزة تاءً','قلب التاء واوًا']).map(o => `<button onclick="app.answerSubstitution('${this.escape(o)}','${this.escape(d.rule)}')" class="choice-btn bg-slate-800 hover:bg-teal-700 border border-slate-700 p-5 rounded-xl font-bold text-lg">${o}</button>`).join("")}
+            </div>
+            <div id="substitution-feedback" class="mt-7"></div>
+        </div>`;
+    },
+
+    answerSubstitution: function(answer, correct) {
+        if (answer === correct) {
+            this.playSound("success");
+            document.getElementById("substitution-feedback").innerHTML = `
+            <div class="bg-emerald-900/20 border border-emerald-500/40 rounded-xl p-6 text-center pop">
+                <i class="fas fa-check-circle text-5xl text-emerald-400 mb-3"></i>
+                <h3 class="text-2xl font-black">صحيح!</h3>
+                <button onclick="app.nextQuestion()" class="mt-5 bg-emerald-600 px-8 py-3 rounded-full font-bold">التالي</button>
+            </div>`;
+            this.registerCorrect(70);
+        } else {
+            this.playSound("error");
+            document.getElementById("substitution-feedback").innerHTML = `
+            <div class="bg-red-900/20 border border-red-500/40 rounded-xl p-6 text-center">
+                <p class="text-red-300 font-bold">إجابة غير صحيحة.</p>
+                <button onclick="app.nextQuestion()" class="mt-4 bg-slate-700 px-6 py-2 rounded-full">التالي</button>
+            </div>`;
+            this.registerWrong(this.currentQuestion);
+        }
+    },
+
+    renderAssimilation: function(q) {
+        const d = q.data;
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-8 border-red-500/30">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-red-900/30 border border-red-500/30 px-5 py-2 rounded-full text-red-400 mb-5"><i class="fas fa-compress-alt ml-2"></i> الإدغام</div>
+                <div class="flex items-center justify-center gap-4 text-3xl md:text-5xl font-black">
+                    <span class="text-slate-300">${d.before}</span>
+                    <i class="fas fa-arrow-left text-cyan-400"></i>
+                    <span class="text-red-400 synthesizing">${d.after}</span>
+                </div>
+                <h3 class="text-xl font-bold mt-8">ما نوع الإدغام؟</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                ${this.shuffle(['إدغام متماثلين','إدغام متقاربين','إدغام واجب','إدغام جائز']).map(o => `<button onclick="app.answerAssimilation('${this.escape(o)}','${this.escape(d.rule)}')" class="choice-btn bg-slate-800 hover:bg-red-700 border border-slate-700 p-5 rounded-xl font-bold text-lg">${o}</button>`).join("")}
+            </div>
+            <div id="assimilation-feedback" class="mt-7"></div>
+        </div>`;
+    },
+
+    answerAssimilation: function(answer, correct) {
+        if (answer === correct) {
+            this.playSound("success");
+            document.getElementById("assimilation-feedback").innerHTML = `
+            <div class="bg-emerald-900/20 border border-emerald-500/40 rounded-xl p-6 text-center pop">
+                <i class="fas fa-check-circle text-5xl text-emerald-400 mb-3"></i>
+                <h3 class="text-2xl font-black">صحيح!</h3>
+                <button onclick="app.nextQuestion()" class="mt-5 bg-emerald-600 px-8 py-3 rounded-full font-bold">التالي</button>
+            </div>`;
+            this.registerCorrect(70);
+        } else {
+            this.playSound("error");
+            document.getElementById("assimilation-feedback").innerHTML = `
+            <div class="bg-red-900/20 border border-red-500/40 rounded-xl p-6 text-center">
+                <p class="text-red-300 font-bold">إجابة غير صحيحة.</p>
+                <button onclick="app.nextQuestion()" class="mt-4 bg-slate-700 px-6 py-2 rounded-full">التالي</button>
+            </div>`;
+            this.registerWrong(this.currentQuestion);
+        }
+    },
+
+    renderDeletion: function(q) {
+        const d = q.data;
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-8 border-amber-500/30">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-amber-900/30 border border-amber-500/30 px-5 py-2 rounded-full text-amber-400 mb-5"><i class="fas fa-eraser ml-2"></i> الحذف</div>
+                <div class="flex items-center justify-center gap-4 text-3xl md:text-5xl font-black">
+                    <span class="text-slate-300">${d.before}</span>
+                    <i class="fas fa-arrow-left text-cyan-400"></i>
+                    <span class="text-amber-400 synthesizing">${d.after}</span>
+                </div>
+                <h3 class="text-xl font-bold mt-8">ما الحرف المحذوف؟</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                ${this.shuffle(['الواو','الياء','الألف','الهمزة']).map(o => `<button onclick="app.answerDeletion('${this.escape(o)}','${this.escape(d.rule)}')" class="choice-btn bg-slate-800 hover:bg-amber-700 border border-slate-700 p-5 rounded-xl font-bold text-lg">${o}</button>`).join("")}
+            </div>
+            <div id="deletion-feedback" class="mt-7"></div>
+        </div>`;
+    },
+
+    answerDeletion: function(answer, correct) {
+        if (answer === correct) {
+            this.playSound("success");
+            document.getElementById("deletion-feedback").innerHTML = `
+            <div class="bg-emerald-900/20 border border-emerald-500/40 rounded-xl p-6 text-center pop">
+                <i class="fas fa-check-circle text-5xl text-emerald-400 mb-3"></i>
+                <h3 class="text-2xl font-black">صحيح!</h3>
+                <button onclick="app.nextQuestion()" class="mt-5 bg-emerald-600 px-8 py-3 rounded-full font-bold">التالي</button>
+            </div>`;
+            this.registerCorrect(70);
+        } else {
+            this.playSound("error");
+            document.getElementById("deletion-feedback").innerHTML = `
+            <div class="bg-red-900/20 border border-red-500/40 rounded-xl p-6 text-center">
+                <p class="text-red-300 font-bold">إجابة غير صحيحة.</p>
+                <button onclick="app.nextQuestion()" class="mt-4 bg-slate-700 px-6 py-2 rounded-full">التالي</button>
+            </div>`;
+            this.registerWrong(this.currentQuestion);
+        }
+    },
+
+    renderDiscover: function(q) {
+        const d = q.data;
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-8 border-lime-500/30">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-lime-900/30 border border-lime-500/30 px-5 py-2 rounded-full text-lime-400 mb-5"><i class="fas fa-lightbulb ml-2"></i> اكتشف القاعدة</div>
+                <h3 class="text-2xl font-black mb-4">تأمل الأمثلة التالية</h3>
+                <div class="flex flex-wrap justify-center gap-3 mb-6">
+                    ${d.examples.map(ex => `<span class="bg-slate-800 rounded-full px-4 py-2 text-lg">${ex}</span>`).join("")}
+                </div>
+                <h3 class="text-xl font-bold">ما القاعدة المشتركة؟</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                ${this.shuffle(d.options).map(o => `<button onclick="app.answerDiscover('${this.escape(o)}','${this.escape(d.answer)}')" class="choice-btn bg-slate-800 hover:bg-lime-700 border border-slate-700 p-5 rounded-xl font-bold text-lg">${o}</button>`).join("")}
+            </div>
+            <div id="discover-feedback" class="mt-7"></div>
+        </div>`;
+    },
+
+    answerDiscover: function(answer, correct) {
+        if (answer === correct) {
+            this.playSound("success");
+            document.getElementById("discover-feedback").innerHTML = `
+            <div class="bg-emerald-900/20 border border-emerald-500/40 rounded-xl p-6 text-center pop">
+                <i class="fas fa-check-circle text-5xl text-emerald-400 mb-3"></i>
+                <h3 class="text-2xl font-black">أحسنت الاستنتاج!</h3>
+                <p class="text-slate-300 mt-3">${this.currentQuestion.data.explanation}</p>
+                <button onclick="app.nextQuestion()" class="mt-5 bg-emerald-600 px-8 py-3 rounded-full font-bold">التالي</button>
+            </div>`;
+            this.registerCorrect(90);
+        } else {
+            this.playSound("error");
+            document.getElementById("discover-feedback").innerHTML = `
+            <div class="bg-red-900/20 border border-red-500/40 rounded-xl p-6 text-center">
+                <p class="text-red-300 font-bold">القاعدة غير صحيحة.</p>
+                <button onclick="app.nextQuestion()" class="mt-4 bg-slate-700 px-6 py-2 rounded-full">التالي</button>
+            </div>`;
+            this.registerWrong(this.currentQuestion);
+        }
+    },
+
+    renderFreeLab: function() {
+        const rootOptions = ROOTS.map(r => `<option value="${r.root}">${r.root} - ${r.type}</option>`).join("");
+        const patternOptions = Object.keys(PATTERNS).map(p => `<option value="${p}">${p} - ${PATTERNS[p].category || PATTERNS[p].tense || ''}</option>`).join("");
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-8 border-sky-500/30">
+            <div class="text-center mb-8">
+                <i class="fas fa-flask text-5xl text-sky-400 mb-4"></i>
+                <h2 class="text-3xl font-black">المختبر الحر</h2>
+                <p class="text-slate-400 mt-2">اختر جذرًا ووزنًا وشاهد الناتج مع التفسير</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">الجذر</label>
+                    <select id="free-root" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white">${rootOptions}</select>
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">الوزن</label>
+                    <select id="free-pattern" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white">${patternOptions}</select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="app.freeLabDerive()" class="w-full bg-sky-600 hover:bg-sky-500 px-6 py-3 rounded-xl font-bold">اشتقاق <i class="fas fa-arrow-left mr-2"></i></button>
+                </div>
+            </div>
+            <div id="free-result"></div>
+        </div>`;
+    },
+
+    freeLabDerive: function() {
+        const rootStr = document.getElementById("free-root").value;
+        const patternName = document.getElementById("free-pattern").value;
+        const root = ROOTS.find(r => r.root === rootStr);
+        const pattern = PATTERNS[patternName];
+        const result = MorphologyEngine.derive(root.letters, root.type, pattern.template, patternName);
+        const sentenceObj = this.findSentenceForWord(result.finalWord);
+        document.getElementById("free-result").innerHTML = `
+        <div class="bg-slate-900/60 border border-slate-700 rounded-2xl p-7 pop">
+            <div class="text-center mb-4">
+                <div class="text-3xl font-black text-white mb-2">${result.finalWord}</div>
+                <div class="text-cyan-400 font-bold mb-2">${root.root} + ${patternName}</div>
+                <p class="text-slate-300 text-sm mb-4">${result.explanation}</p>
+                ${sentenceObj ? `<div class="bg-slate-800 rounded-xl p-5 text-xl leading-loose">${sentenceObj.sentence.replace('{blank}', `<span class="text-yellow-400 font-black">${result.finalWord}</span>`)}</div>` : ''}
+                <div class="mt-5">
+                    <button onclick="app.showMicroscope('${root.root}','${patternName}','${result.finalWord}')" class="bg-slate-700 hover:bg-slate-600 px-6 py-2 rounded-full text-sm"><i class="fas fa-microscope ml-2"></i> المجهر الصرفي</button>
+                </div>
+            </div>
+            <div class="space-y-2">
+                ${result.steps.map((step, i) => `
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="text-slate-400">${i+1}.</span>
+                        <span class="text-slate-300">${step.label}:</span>
+                        <span class="text-white font-bold">${step.word}</span>
+                    </div>
+                `).join("")}
+            </div>
+        </div>`;
+        this.playSound("synthesize");
+    },
+
+    showMicroscope: function(root, pattern, word) {
+        const rootObj = ROOTS.find(r => r.root === root);
+        const patternObj = PATTERNS[pattern];
+        const result = MorphologyEngine.derive(rootObj.letters, rootObj.type, patternObj.template, pattern);
+        this.openModal(`
+        <div class="text-center mb-6">
+            <i class="fas fa-microscope text-5xl text-cyan-400 mb-4"></i>
+            <h2 class="text-3xl font-black">المجهر الصرفي</h2>
+        </div>
+        <div class="bg-slate-900 rounded-xl p-5 space-y-3">
+            <p><span class="text-slate-400">الجذر:</span> <strong>${root}</strong></p>
+            <p><span class="text-slate-400">الوزن:</span> <strong>${pattern}</strong></p>
+            <p><span class="text-slate-400">الناتج:</span> <strong class="text-cyan-400">${word}</strong></p>
+            <p><span class="text-slate-400">العمليات:</span> <strong>${result.explanation}</strong></p>
+            <div class="mt-4 space-y-2">
+                ${result.steps.map((s, i) => `<div class="flex items-center gap-2"><span class="text-slate-400">${i+1}.</span> <span class="text-slate-300">${s.label}:</span> <span class="text-white font-bold">${s.word}</span></div>`).join("")}
+            </div>
+        </div>
+        `);
+    },
+
+    findSentenceForWord: function(word) {
+        return SENTENCE_CONTEXTS.find(s => s.word === word) || null;
+    },
+
+    showHint: function() {
+        const q = this.currentQuestion;
+        let text = "";
+        if (q.type === "synthesis") {
+            text = `الجذر «${q.root.root}»، وفكر في الوظيفة المطلوبة: ${PATTERNS[q.pattern].category || PATTERNS[q.pattern].tense}.`;
+        } else if (q.type === "transform") {
+            text = `ركز على نوع التحول: ${q.data.type}.`;
+        } else if (q.type === "analysis") {
+            text = `ابحث عن الجذر والوزن المناسبين للكلمة «${q.data.word}».`;
+        } else {
+            text = "ابحث عن العلاقة بين الجذر والوظيفة الصرفية المطلوبة.";
+        }
+        this.toast("💡 " + text);
+    },
+
+    nextQuestion: function() {
+        this.questionIndex++;
+        this.analysisAnswers = {};
+        this.renderQuestion();
+    },
+
+    updateGameHUD: function() {
+        document.getElementById("combo-display").innerText = this.state.combo;
+        document.getElementById("stars-display").innerText = this.state.stars;
+        const total = this.state.correct + this.state.wrong;
+        const accuracy = total === 0 ? 100 : Math.round(this.state.correct / total * 100);
+        document.getElementById("accuracy-display").innerText = `الدقة ${accuracy}%`;
+        this.updateHeader();
+    },
+
+    finishLab: function() {
+        const total = this.state.correct + this.state.wrong;
+        const accuracy = total ? Math.round(this.state.correct / total * 100) : 0;
+        let stars = 1;
+        if (accuracy >= 70) stars = 2;
+        if (accuracy >= 90) stars = 3;
+        this.state.stars += stars;
+        if (!this.state.completedLabs.includes(this.currentLab)) this.state.completedLabs.push(this.currentLab);
+        this.saveState();
+        this.playSound("level");
+        document.getElementById("question-progress").style.width = "100%";
+        document.getElementById("game-content").innerHTML = `
+        <div class="glass-panel rounded-2xl p-10 text-center border-yellow-500/40 shadow-[0_0_50px_rgba(234,179,8,.15)] pop">
+            <i class="fas fa-trophy text-7xl text-yellow-400 mb-6 drop-shadow-[0_0_20px_rgba(250,204,21,.8)]"></i>
+            <h2 class="text-4xl font-black mb-3">اكتمل المختبر!</h2>
+            <p class="text-slate-400 mb-8">لقد أنجزت هذه التجربة الصرفية.</p>
+            <div class="flex justify-center gap-3 mb-8">
+                ${[1,2,3].map(i => `<i class="fas fa-star text-5xl ${i <= stars ? "text-yellow-400 star-animation":"text-slate-700"}"></i>`).join("")}
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-8">
+                <div class="bg-slate-900 rounded-xl p-4"><p class="text-xs text-slate-400">الدقة</p><p class="text-2xl font-black text-emerald-400">${accuracy}%</p></div>
+                <div class="bg-slate-900 rounded-xl p-4"><p class="text-xs text-slate-400">السلسلة</p><p class="text-2xl font-black text-orange-400">${this.state.bestCombo}</p></div>
+                <div class="bg-slate-900 rounded-xl p-4"><p class="text-xs text-slate-400">النقاط</p><p class="text-2xl font-black text-yellow-400">${this.state.score}</p></div>
+                <div class="bg-slate-900 rounded-xl p-4"><p class="text-xs text-slate-400">المستوى</p><p class="text-2xl font-black text-cyan-400">${this.state.level}</p></div>
+            </div>
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="app.goHome()" class="bg-slate-700 hover:bg-slate-600 px-7 py-3 rounded-full font-bold"><i class="fas fa-home ml-2"></i> المختبرات</button>
+                <button onclick="app.startLab('${this.currentLab}')" class="bg-gradient-to-r from-cyan-500 to-blue-500 px-7 py-3 rounded-full font-bold"><i class="fas fa-redo ml-2"></i> إعادة المختبر</button>
+            </div>
+        </div>`;
+    },
+
+    showStats: function() {
+        const total = this.state.correct + this.state.wrong;
+        const accuracy = total ? Math.round(this.state.correct / total * 100) : 0;
+        const achievements = ACHIEVEMENTS.filter(a => this.state.achievements.includes(a.id));
+        this.openModal(`
+        <div class="text-center mb-8">
+            <i class="fas fa-chart-line text-5xl text-cyan-400 mb-4"></i>
+            <h2 class="text-3xl font-black">لوحة الإنجازات</h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="bg-slate-900 rounded-xl p-5 text-center"><p class="text-slate-400 text-sm">المستوى</p><p class="text-3xl font-black text-cyan-400">${this.state.level}</p></div>
+            <div class="bg-slate-900 rounded-xl p-5 text-center"><p class="text-slate-400 text-sm">النقاط</p><p class="text-3xl font-black text-yellow-400">${this.state.score}</p></div>
+            <div class="bg-slate-900 rounded-xl p-5 text-center"><p class="text-slate-400 text-sm">الدقة</p><p class="text-3xl font-black text-emerald-400">${accuracy}%</p></div>
+            <div class="bg-slate-900 rounded-xl p-5 text-center"><p class="text-slate-400 text-sm">أفضل سلسلة</p><p class="text-3xl font-black text-orange-400">${this.state.bestCombo}</p></div>
+            <div class="bg-slate-900 rounded-xl p-5 text-center"><p class="text-slate-400 text-sm">الكلمات</p><p class="text-3xl font-black text-purple-400">${this.state.words.length}</p></div>
+            <div class="bg-slate-900 rounded-xl p-5 text-center"><p class="text-slate-400 text-sm">التفاعلات</p><p class="text-3xl font-black text-blue-400">${this.state.syntheses}</p></div>
+        </div>
+        <h3 class="text-xl font-bold mt-8 mb-4"><i class="fas fa-medal text-yellow-400 ml-2"></i> الإنجازات</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            ${ACHIEVEMENTS.map(a => {
+                const unlocked = this.state.achievements.includes(a.id);
+                return `
+                <div class="rounded-xl p-4 border ${unlocked ? "border-yellow-500/40 bg-yellow-900/10" : "border-slate-700 bg-slate-900 opacity-50"}">
+                    <div class="flex items-center gap-4">
+                        <i class="fas ${a.icon} text-2xl ${unlocked ? "text-yellow-400" : "text-slate-500"}"></i>
+                        <div>
+                            <div class="font-bold">${a.name}</div>
+                            <div class="text-xs text-slate-400 mt-1">${a.description}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join("")}
+        </div>
+        <div class="mt-8 text-center">
+            <button onclick="app.resetProgress()" class="text-red-400 hover:text-red-300 text-sm"><i class="fas fa-trash ml-1"></i> مسح التقدم</button>
+        </div>`);
+    },
+
+    showDictionary: function() {
+        const words = this.state.words;
+        this.openModal(`
+        <div class="text-center mb-7">
+            <i class="fas fa-book text-5xl text-purple-400 mb-4"></i>
+            <h2 class="text-3xl font-black">قاموس المكتشفات</h2>
+            <p class="text-slate-400 mt-2">${words.length} كلمة مكتشفة</p>
+        </div>
+        ${words.length === 0 ? `<div class="text-center text-slate-400 py-10">لم تكتشف أي كلمة بعد.</div>` :
+        `<div class="grid grid-cols-2 md:grid-cols-4 gap-3">${words.map(word => `<div class="bg-slate-900 border border-purple-500/20 rounded-xl p-4 text-center"><div class="text-xl font-black text-purple-300">${word}</div></div>`).join("")}</div>`}
+        `);
+    },
+
+    showMistakes: function() {
+        const mistakes = this.state.mistakes;
+        this.openModal(`
+        <div class="text-center mb-7">
+            <i class="fas fa-heartbeat text-5xl text-red-400 mb-4"></i>
+            <h2 class="text-3xl font-black">مختبر المراجعة</h2>
+            <p class="text-slate-400 mt-2">الأسئلة التي تحتاج إلى مزيد من التدريب</p>
+        </div>
+        ${mistakes.length === 0 ? `<div class="text-center py-10"><i class="fas fa-check-circle text-6xl text-emerald-400 mb-4"></i><p class="text-xl font-bold">لا توجد أخطاء مسجلة.</p></div>` :
+        `<div class="space-y-3">${mistakes.map((m,i) => `<div class="bg-slate-900 rounded-xl p-5 border border-red-500/20"><div class="text-sm text-slate-400 mb-2">خطأ ${i+1}</div><div class="font-bold">${this.describeQuestion(m)}</div></div>`).join("")}</div>
+        <div class="text-center mt-7"><button onclick="app.startMistakeReview()" class="bg-red-700 hover:bg-red-600 px-8 py-3 rounded-full font-bold"><i class="fas fa-stethoscope ml-2"></i> بدء المراجعة</button></div>`}
+        `);
+    },
+
+    describeQuestion: function(q) {
+        if (q.type === 'synthesis') return `تركيب ${q.root.root} ← ${q.pattern}`;
+        if (q.type === 'analysis') return `تحليل الكلمة: ${q.data.word}`;
+        if (q.type === 'transform') return `${q.data.input} ← ${q.data.output}`;
+        if (q.type === 'context') return q.data.sentence;
+        if (q.type === 'weakening') return `${q.data.before} ← ${q.data.after}`;
+        if (q.type === 'substitution') return `${q.data.before} ← ${q.data.after}`;
+        if (q.type === 'assimilation') return `${q.data.before} ← ${q.data.after}`;
+        if (q.type === 'deletion') return `${q.data.before} ← ${q.data.after}`;
+        if (q.type === 'discover') return q.data.rule;
+        return "تحدٍ صرفي";
+    },
+
+    startMistakeReview: function() {
+        this.closeModal();
+        if (this.state.mistakes.length === 0) {
+            this.toast("لا توجد أخطاء للمراجعة.");
+            return;
+        }
+        this.currentLab = "mixed";
+        this.currentQuestions = this.shuffle(this.state.mistakes);
+        this.questionIndex = 0;
+        document.getElementById("home-screen").classList.add("hidden");
+        document.getElementById("game-screen").classList.remove("hidden");
+        this.setLabHeader("mixed");
+        this.renderQuestion();
+    },
+
+    resetProgress: function() {
+        if (!confirm("هل أنت متأكد من مسح جميع تقدمك؟")) return;
+        localStorage.removeItem("chemistry_roots_v3");
+        location.reload();
+    },
+
+    openModal: function(content) {
+        document.getElementById("modal-body").innerHTML = content;
+        const modal = document.getElementById("modal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    },
+
+    closeModal: function() {
+        const modal = document.getElementById("modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    },
+
+    toast: function(message) {
+        const toast = document.getElementById("toast");
+        document.getElementById("toast-text").innerText = message;
+        toast.classList.remove("hidden");
+        toast.classList.add("toast");
+        clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => {
+            toast.classList.add("hidden");
+        }, 3000);
+    },
+
+    escape: function(value) {
+        return String(value).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    app.init();
+});
+
+</script>
+
+</body>
+  </html>
